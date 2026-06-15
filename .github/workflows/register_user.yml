@@ -1,0 +1,99 @@
+name: Register User
+
+on:
+  workflow_dispatch:
+    inputs:
+      email:
+        description: 'Email užívateľa'
+        required: true
+      typ_org:
+        description: 'Typ organizácie'
+        required: true
+      oblasti:
+        description: 'Oblasti záujmu (JSON array)'
+        required: true
+      kw_custom:
+        description: 'Vlastné kľúčové slová (JSON array)'
+        required: false
+        default: '[]'
+      interval:
+        description: 'Interval posielania'
+        required: false
+        default: 'pondelok'
+
+permissions:
+  contents: write
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Register user
+        run: |
+          python3 << 'PYEOF'
+          import json, os
+          from datetime import datetime
+
+          SUBOR = "users.json"
+
+          # Načítaj existujúcich užívateľov
+          if os.path.exists(SUBOR):
+              with open(SUBOR, 'r') as f:
+                  users = json.load(f)
+          else:
+              users = []
+
+          email     = os.environ['INPUT_EMAIL'].strip().lower()
+          typ_org   = os.environ['INPUT_TYP_ORG']
+          oblasti   = json.loads(os.environ['INPUT_OBLASTI'])
+          kw_custom = json.loads(os.environ['INPUT_KW_CUSTOM'])
+          interval  = os.environ['INPUT_INTERVAL']
+
+          # Ak už existuje → aktualizuj, inak pridaj
+          existujuci = next((u for u in users if u['email'] == email), None)
+          if existujuci:
+              existujuci['typ_org']   = typ_org
+              existujuci['oblasti']   = oblasti
+              existujuci['kw_custom'] = kw_custom
+              existujuci['interval']  = interval
+              existujuci['updated']   = datetime.now().strftime('%Y-%m-%d %H:%M')
+              print(f"✅ Aktualizovaný: {email}")
+          else:
+              users.append({
+                  "email"      : email,
+                  "typ_org"    : typ_org,
+                  "oblasti"    : oblasti,
+                  "kw_custom"  : kw_custom,
+                  "interval"   : interval,
+                  "registracia": datetime.now().strftime('%Y-%m-%d %H:%M'),
+                  "updated"    : datetime.now().strftime('%Y-%m-%d %H:%M'),
+              })
+              print(f"✅ Nový užívateľ: {email}")
+
+          print(f"Celkom užívateľov: {len(users)}")
+
+          with open(SUBOR, 'w') as f:
+              json.dump(users, f, indent=2, ensure_ascii=False)
+          PYEOF
+        env:
+          INPUT_EMAIL:     ${{ github.event.inputs.email }}
+          INPUT_TYP_ORG:   ${{ github.event.inputs.typ_org }}
+          INPUT_OBLASTI:   ${{ github.event.inputs.oblasti }}
+          INPUT_KW_CUSTOM: ${{ github.event.inputs.kw_custom }}
+          INPUT_INTERVAL:  ${{ github.event.inputs.interval }}
+
+      - name: Save users.json
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add users.json
+          git commit -m "register user [skip ci]" || echo "nothing to commit"
+          git push
