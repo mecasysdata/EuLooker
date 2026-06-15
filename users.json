@@ -1,15 +1,13 @@
 [
   {
     "email": "eva.matejcik@mecasys.sk",
-    "typ_org": "SME",
+    "typ_org": "Verejný sektor",
     "oblasti": [
-      "Zdravie / Medicína / Biotech"
+      "Zelená energia / Klíma"
     ],
-    "kw_custom": [
-      "pills"
-    ],
-    "interval": "streda+pondelok",
+    "kw_custom": [],
+    "interval": "pondelok",
     "registracia": "2026-06-15 14:33",
-    "updated": "2026-06-15 14:33"
+    "updated": "2026-06-15 15:17"
   }
 ]
