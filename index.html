@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EU Grants Monitor — MecaSys</title>
+<title>EuLooker — EU Grants Monitor</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -45,19 +45,8 @@
   .btn-outline { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
 
   /* HERO */
-  .hero {
-    padding: 72px 32px 64px;
-    text-align: center;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg);
-  }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: var(--bg-teal); color: var(--teal-dark);
-    border: 1px solid #9FE1CB; border-radius: 20px;
-    padding: 4px 12px; font-size: 12px; font-weight: 500;
-    margin-bottom: 24px;
-  }
+  .hero { padding: 72px 32px 64px; text-align: center; border-bottom: 1px solid var(--border); }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--bg-teal); color: var(--teal-dark); border: 1px solid #9FE1CB; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 500; margin-bottom: 24px; }
   .hero-badge span { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; display: inline-block; }
   .hero h1 { font-size: 38px; font-weight: 700; line-height: 1.18; color: var(--navy); max-width: 560px; margin: 0 auto 16px; letter-spacing: -.5px; }
   .hero p { font-size: 16px; color: var(--text-mid); max-width: 440px; margin: 0 auto 32px; line-height: 1.65; }
@@ -96,23 +85,35 @@
   .konfig-title { font-size: 18px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
   .konfig-sub { font-size: 14px; color: var(--text-mid); margin-bottom: 24px; }
   .field-label { font-size: 12px; font-weight: 600; color: var(--text-mid); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px; }
+
+  /* TYP ORGANIZÁCIE */
+  .org-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 7px; margin-bottom: 20px; }
+  .org-card { display: flex; align-items: center; gap: 10px; padding: 10px 13px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; background: var(--bg); transition: border-color .12s, background .12s; user-select: none; }
+  .org-card:hover { border-color: #9FE1CB; background: #f8fdfb; }
+  .org-card.active { border-color: var(--teal); background: var(--bg-teal); }
+  .org-icon { font-size: 18px; flex-shrink: 0; }
+  .org-name { font-size: 13px; font-weight: 600; color: var(--navy); }
+  .org-card.active .org-name { color: var(--teal-dark); }
+
+  /* OBLASTI */
   .ob-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 7px; margin-bottom: 20px; }
   .ob-card { display: flex; align-items: flex-start; gap: 10px; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; background: var(--bg); transition: border-color .12s, background .12s; user-select: none; }
   .ob-card:hover { border-color: #9FE1CB; background: #f8fdfb; }
   .ob-card.active { border-color: var(--teal); background: var(--bg-teal); }
   .ob-card.locked { opacity: .35; pointer-events: none; }
   .ob-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-  .ob-info {}
   .ob-name { font-size: 13px; font-weight: 600; color: var(--navy); line-height: 1.3; }
   .ob-prog { font-size: 11px; color: var(--text-soft); margin-top: 1px; }
   .ob-card.active .ob-prog { color: var(--teal-dark); }
   .ob-hint { font-size: 12px; color: var(--text-soft); margin-top: -10px; margin-bottom: 20px; }
 
+  /* KĽÚČOVÉ SLOVÁ */
   .kw-box { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; margin-bottom: 20px; }
   .kw-sublabel { font-size: 11px; color: var(--text-soft); margin-bottom: 8px; }
   .pills { display: flex; flex-wrap: wrap; gap: 5px; min-height: 24px; margin-bottom: 10px; }
   .pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 20px; font-size: 12px; }
   .pill-auto { background: #E6F1FB; color: #0C447C; border: 1px solid #B5D4F4; }
+  .pill-org  { background: #EAF3DE; color: #27500A; border: 1px solid #C0DD97; }
   .pill-custom { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); }
   .pill-x { background: none; border: none; cursor: pointer; color: inherit; opacity: .5; font-size: 12px; line-height: 1; padding: 0; }
   .pill-x:hover { opacity: 1; }
@@ -120,20 +121,20 @@
   .add-row { display: flex; gap: 7px; }
   .add-row input { flex: 1; height: 34px; font-size: 13px; border: 1px solid var(--border); border-radius: 7px; padding: 0 11px; background: var(--bg); color: var(--text); outline: none; }
   .add-row input:focus { border-color: var(--teal); }
-  .add-row button { height: 34px; padding: 0 13px; font-size: 13px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; white-space: nowrap; }
+  .add-row button { height: 34px; padding: 0 13px; font-size: 13px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
   .add-row button:hover { background: var(--bg-soft); }
 
+  /* EMAIL + FREQ */
   .email-section { margin-bottom: 16px; }
   .email-input { width: 100%; height: 40px; font-size: 14px; border: 1px solid var(--border); border-radius: 8px; padding: 0 14px; color: var(--text); background: var(--bg); outline: none; margin-bottom: 10px; }
   .email-input:focus { border-color: var(--teal); }
-  .freq-row { display: flex; gap: 6px; margin-bottom: 12px; }
+  .freq-row { display: flex; gap: 6px; margin-bottom: 16px; }
   .freq-btn { flex: 1; height: 32px; font-size: 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg); color: var(--text-mid); cursor: pointer; }
   .freq-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-  .sme-row { display: flex; align-items: center; gap: 9px; padding: 10px 13px; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text); margin-bottom: 16px; }
-  .sme-row input { width: 15px; height: 15px; cursor: pointer; accent-color: var(--teal); }
 
   .submit-btn { width: 100%; height: 44px; background: var(--navy); color: #fff; border: none; border-radius: 9px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s; }
   .submit-btn:hover { background: var(--navy-light); }
+  .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
 
   /* SUCCESS */
   .success-box { display: none; text-align: center; padding: 32px 24px; }
@@ -159,7 +160,7 @@
     .stats { grid-template-columns: 1fr; }
     .stat { border-right: none; border-bottom: 1px solid var(--border); }
     .how-grid { grid-template-columns: 1fr 1fr; }
-    .ob-grid { grid-template-columns: 1fr; }
+    .org-grid, .ob-grid { grid-template-columns: 1fr; }
     footer { flex-direction: column; gap: 12px; text-align: center; }
   }
 </style>
@@ -171,7 +172,7 @@
     <div class="logo-mark">
       <svg viewBox="0 0 16 16"><polyline points="2,10 5,6 8,8 11,4 14,6"/></svg>
     </div>
-    EU Grants Monitor
+    EuLooker
   </a>
   <div class="nav-right">
     <a href="#ako-to-funguje" class="nav-link">Ako to funguje</a>
@@ -181,8 +182,8 @@
 
 <section class="hero">
   <div class="hero-badge"><span></span> 200+ EU programov · zadarmo navždy</div>
-  <h1>Nepremešajte žiadnu EU výzvu pre vašu firmu</h1>
-  <p>Automatický monitoring EC portálu. Každý pondelok dostanete len výzvy, ktoré sú pre vás relevantné — nie stovky irelevantných emailov.</p>
+  <h1>Nepremešajte žiadnu EU výzvu pre vašu organizáciu</h1>
+  <p>Automatický monitoring EC portálu. Dostanete len výzvy relevantné pre váš typ organizácie a oblasti záujmu.</p>
   <div class="hero-btns">
     <a href="#konfigurator" class="btn btn-primary">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -193,18 +194,9 @@
 </section>
 
 <div class="stats">
-  <div class="stat">
-    <div class="stat-n">200+</div>
-    <div class="stat-l">EU programov</div>
-  </div>
-  <div class="stat">
-    <div class="stat-n">735</div>
-    <div class="stat-l">aktívnych výziev</div>
-  </div>
-  <div class="stat">
-    <div class="stat-n">zadarmo</div>
-    <div class="stat-l">vždy a navždy</div>
-  </div>
+  <div class="stat"><div class="stat-n">200+</div><div class="stat-l">EU programov</div></div>
+  <div class="stat"><div class="stat-n">700+</div><div class="stat-l">aktívnych výziev</div></div>
+  <div class="stat"><div class="stat-n">zadarmo</div><div class="stat-l">vždy a navždy</div></div>
 </div>
 
 <section class="section" id="ako-to-funguje">
@@ -213,7 +205,7 @@
     <div class="how-step">
       <div class="how-num">01</div>
       <div class="how-title">Nastavíte profil</div>
-      <div class="how-desc">Vyberte oblasti záujmu a kľúčové slová. Systém navrhne slová automaticky.</div>
+      <div class="how-desc">Vyberte typ organizácie a oblasti záujmu. Kľúčové slová sa doplnia automaticky.</div>
     </div>
     <div class="how-step">
       <div class="how-num">02</div>
@@ -223,12 +215,12 @@
     <div class="how-step">
       <div class="how-num">03</div>
       <div class="how-title">Filtrujeme</div>
-      <div class="how-desc">Porovnáme s vaším profilom. Pošleme len nové výzvy, ktoré ste ešte nevideli.</div>
+      <div class="how-desc">Výzva musí vyhovovať vášmu typu organizácie AJ oblasti záujmu.</div>
     </div>
     <div class="how-step">
       <div class="how-num">04</div>
       <div class="how-title">Dostanete email</div>
-      <div class="how-desc">Prehľadný email so zhrnutím každej výzvy a priamym linkom na EC portál.</div>
+      <div class="how-desc">Prehľadný email s novými výzvami priamo na váš email.</div>
     </div>
   </div>
 </section>
@@ -257,15 +249,24 @@
   <div class="konfig-card">
     <div id="form-view">
       <div class="konfig-title">Nastavte váš monitoring</div>
-      <div class="konfig-sub">Vyberte oblasti, upravte kľúčové slová a zadajte email. Trvá to 2 minúty.</div>
+      <div class="konfig-sub">Trvá to 2 minúty. Výzvy dostanete len tie, ktoré sú relevantné pre vás.</div>
 
+      <!-- TYP ORGANIZÁCIE -->
+      <div class="field-label">Typ organizácie</div>
+      <div class="org-grid" id="org-grid"></div>
+
+      <!-- OBLASTI -->
       <div class="field-label">Oblasti záujmu (max. 3)</div>
       <div class="ob-grid" id="ob-grid"></div>
       <div class="ob-hint" id="ob-hint">Vyberte 1–3 oblasti — kľúčové slová sa doplnia automaticky.</div>
 
+      <!-- KĽÚČOVÉ SLOVÁ -->
       <div class="field-label">Kľúčové slová</div>
       <div class="kw-box">
-        <div class="kw-sublabel">Navrhnuté z vybratých oblastí — ponechajte čo chcete, zmažte čo nechcete, pridajte vlastné</div>
+        <div class="kw-sublabel">
+          🟦 z oblasti &nbsp;·&nbsp; 🟩 z typu org. &nbsp;·&nbsp; ⬜ vlastné
+          — ponechajte čo chcete, zmažte čo nechcete, pridajte vlastné
+        </div>
         <div class="pills" id="kw-pills"></div>
         <div class="sep"></div>
         <div class="add-row">
@@ -274,6 +275,7 @@
         </div>
       </div>
 
+      <!-- EMAIL + INTERVAL -->
       <div class="email-section">
         <div class="field-label">Váš email</div>
         <input type="email" id="email-input" class="email-input" placeholder="vas@email.com">
@@ -282,15 +284,12 @@
           <button class="freq-btn" id="f1" onclick="setFreq(1)">2× týždenne</button>
           <button class="freq-btn" id="f2" onclick="setFreq(2)">Denne</button>
         </div>
-        <label class="sme-row">
-          <input type="checkbox" id="sme-cb" checked>
-          Len výzvy vhodné pre SME (malé a stredné podniky)
-        </label>
       </div>
 
       <button class="submit-btn" onclick="submitForm()">Aktivovať monitoring →</button>
     </div>
 
+    <!-- SUCCESS -->
     <div class="success-box" id="success-view">
       <div class="success-icon">
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -304,44 +303,100 @@
 </section>
 
 <footer>
-  <div class="footer-left">MecaSys EU Grants Monitor · open source · zadarmo</div>
+  <div class="footer-left">EuLooker · MecaSys · open source · zadarmo</div>
   <div class="footer-links">
     <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal" target="_blank">EC portál</a>
-    <a href="https://github.com" target="_blank">GitHub</a>
+    <a href="https://github.com/mecasysdata/EuLooker" target="_blank">GitHub</a>
     <a href="mailto:mecasysdata@gmail.com">Kontakt</a>
   </div>
 </footer>
 
 <script>
+// ── GitHub config ─────────────────────────────────────────────
+const GITHUB_REPO  = 'mecasysdata/EuLooker';
+const GITHUB_TOKEN = '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';
+
+// ── Typy organizácií ──────────────────────────────────────────
+const TYPY_ORG = [
+  { id:'sme',     icon:'🏭', nazov:'SME',
+    kw:['sme','small and medium','smes','eic accelerator','cascade financing','for smes'] },
+  { id:'large',   icon:'🏗️', nazov:'Veľký podnik',
+    kw:['large enterprise','large company','large industry','for-profit','private company'] },
+  { id:'hei',     icon:'🎓', nazov:'Vysoká škola / HEI',
+    kw:['higher education','university','academic institution','hei','academia'] },
+  { id:'rto',     icon:'🔬', nazov:'Výskumná org. (RTO)',
+    kw:['research organisation','research organization','research center','rto','research institute'] },
+  { id:'public',  icon:'🏛️', nazov:'Verejný sektor',
+    kw:['public body','public authority','municipality','local authority','public administration'] },
+  { id:'ngo',     icon:'🤝', nazov:'NGO / Asociácia / Klaster',
+    kw:['non-governmental','ngo','association','cluster','foundation','civil society'] },
+  { id:'startup', icon:'🚀', nazov:'Startup / Spin-off',
+    kw:['startup','start-up','spin-off','spin-out','deep tech','eic pathfinder','scaleup'] },
+  { id:'intl',    icon:'🌍', nazov:'Medzinárodná org.',
+    kw:['international organisation','international organization','intergovernmental','multilateral'] },
+];
+
+// ── Oblasti záujmu ────────────────────────────────────────────
 const OBLASTI = [
   { icon:'🏭', name:'Strojárstvo / Industry 4.0', prog:'Horizon CL4 · EDF · Digital Europe',
     kw:['industry 4.0','industry 5.0','advanced manufacturing','smart factory','digital twin','industrial automation','cobots','additive manufacturing','3d printing','industrial iot','made in europe','factory of the future'] },
   { icon:'🤖', name:'AI / Robotika / Deep Tech', prog:'Horizon CL4 · EIC · Digital Europe',
-    kw:['artificial intelligence','machine learning','robotics','autonomous systems','deep learning','generative ai','computer vision','edge computing','quantum computing','data spaces'] },
-  { icon:'🌿', name:'Zelená energia / Klíma', prog:'Horizon CL5 · LIFE · Innovation Fund · CEF',
-    kw:['renewable energy','green hydrogen','carbon capture','energy storage','solar energy','wind energy','net zero','decarbonisation','circular economy','energy efficiency','smart grid'] },
+    kw:['artificial intelligence','machine learning','robotics','autonomous systems','deep learning','generative ai','computer vision','edge computing','quantum computing','apply ai'] },
+  { icon:'🌿', name:'Zelená energia / Klíma', prog:'Horizon CL5 · LIFE · Innovation Fund',
+    kw:['renewable energy','green hydrogen','carbon capture','energy storage','solar energy','wind energy','net zero','decarbonisation','energy efficiency','smart grid','clean energy'] },
   { icon:'🌱', name:'Agro / Bio / Circular', prog:'Horizon CL6 · LIFE · EAFRD',
-    kw:['precision agriculture','smart farming','bioeconomy','bio-based','biodegradable','sustainable packaging','soil health','microbiome','agritech','biomaterial','food safety'] },
+    kw:['precision agriculture','smart farming','bioeconomy','bio-based','biodegradable','sustainable packaging','soil health','microbiome','agritech','biomaterial'] },
   { icon:'🏥', name:'Zdravie / Medicína / Biotech', prog:'Horizon CL1 · EU4Health · EIC',
-    kw:['medical device','diagnostics','drug development','clinical trial','personalised medicine','digital health','telemedicine','cancer research','health data','biotechnology'] },
+    kw:['medical device','diagnostics','drug development','clinical trial','personalised medicine','digital health','cancer research','biotechnology','antimicrobial','genomics'] },
   { icon:'🛡️', name:'Obrana / Bezpečnosť / Drony', prog:'EDF · ISF · Horizon',
-    kw:['drone','uav','unmanned','defence','dual-use','counter-drone','border surveillance','cbrn','naval','underwater','autonomous systems','military','security technology','swarm'] },
+    kw:['drone','uav','unmanned','defence','dual-use','counter-drone','border surveillance','cbrn','naval','underwater','security technology','swarm'] },
   { icon:'🚀', name:'Vesmír / Space Tech', prog:'Horizon CL4 · ESA · Copernicus',
-    kw:['satellite','earth observation','space exploration','launch vehicle','in-orbit','copernicus','galileo','new space','remote sensing'] },
-  { icon:'🚗', name:'Mobilita / Doprava / Smart City', prog:'Horizon CL5 · CEF · Urban Mobility',
-    kw:['electric vehicle','autonomous driving','connected vehicle','urban mobility','smart city','logistics','zero emission vehicle','battery technology','charging infrastructure'] },
+    kw:['satellite','earth observation','space exploration','copernicus','galileo','new space','remote sensing','space transportation'] },
+  { icon:'🚗', name:'Mobilita / Doprava / Smart City', prog:'Horizon CL5 · CEF',
+    kw:['electric vehicle','autonomous driving','urban mobility','smart city','zero emission vehicle','battery technology','hydrogen vehicle','sustainable transport'] },
   { icon:'💧', name:'Voda / Oceány / Životné prostredie', prog:'Horizon CL6 · LIFE · EMFAF',
-    kw:['water purification','ocean cleaning','marine litter','plastic pollution','marine ecosystem','flood risk','water quality','blue economy','wastewater'] },
+    kw:['water purification','ocean cleaning','marine litter','water quality','blue economy','wastewater','aquaculture','desalination'] },
   { icon:'📚', name:'Vzdelávanie / Sociálna inovácia', prog:'Erasmus+ · ESF · EIC',
-    kw:['education technology','vocational training','digital skills','social innovation','lifelong learning','edtech','reskilling','upskilling'] },
+    kw:['education technology','vocational training','digital skills','social innovation','edtech','reskilling','upskilling','vocational excellence'] },
 ];
 
-let sel = [], kws = [], freq = 0;
+// ── Stav ──────────────────────────────────────────────────────
+let selOrg = null;   // index vybraného typu org
+let sel    = [];     // indexy vybraných oblastí
+let kws    = [];     // [{t, type: 'oblast'|'org'|'custom'}]
+let freq   = 0;
 
+// ── Render: Typ organizácie ───────────────────────────────────
+function renderOrg() {
+  document.getElementById('org-grid').innerHTML = TYPY_ORG.map((o,i) => `
+    <div class="org-card${selOrg===i?' active':''}" onclick="toggleOrg(${i})">
+      <div class="org-icon">${o.icon}</div>
+      <div class="org-name">${o.nazov}</div>
+    </div>
+  `).join('');
+}
+
+function toggleOrg(i) {
+  // Odstráň staré org KW
+  if (selOrg !== null) {
+    const stareKw = TYPY_ORG[selOrg].kw;
+    kws = kws.filter(k => k.type !== 'org');
+  }
+  selOrg = (selOrg === i) ? null : i;
+  // Pridaj nové org KW
+  if (selOrg !== null) {
+    TYPY_ORG[selOrg].kw.forEach(k => {
+      if (!kws.find(x => x.t === k)) kws.push({t:k, type:'org'});
+    });
+  }
+  renderOrg();
+  renderKw();
+}
+
+// ── Render: Oblasti ───────────────────────────────────────────
 function renderOblasti() {
-  const g = document.getElementById('ob-grid');
-  g.innerHTML = OBLASTI.map((o,i) => `
-    <div class="ob-card${sel.includes(i)?' active':''}${sel.length>=3&&!sel.includes(i)?' locked':''}" id="oc${i}" onclick="toggleOblast(${i})">
+  document.getElementById('ob-grid').innerHTML = OBLASTI.map((o,i) => `
+    <div class="ob-card${sel.includes(i)?' active':''}${sel.length>=3&&!sel.includes(i)?' locked':''}" onclick="toggleOblast(${i})">
       <div class="ob-icon">${o.icon}</div>
       <div class="ob-info">
         <div class="ob-name">${o.name}</div>
@@ -355,22 +410,28 @@ function toggleOblast(i) {
   const o = OBLASTI[i], idx = sel.indexOf(i);
   if (idx > -1) {
     sel.splice(idx, 1);
-    kws = kws.filter(k => k.custom || !o.kw.includes(k.t));
+    kws = kws.filter(k => k.type !== 'oblast' || !o.kw.includes(k.t));
   } else {
-    if (sel.length >= 3) { document.getElementById('ob-hint').textContent = 'Maximum sú 3 oblasti. Najprv odznačte jednu.'; return; }
+    if (sel.length >= 3) {
+      document.getElementById('ob-hint').textContent = 'Maximum sú 3 oblasti. Najprv odznačte jednu.';
+      return;
+    }
     sel.push(i);
-    o.kw.forEach(k => { if (!kws.find(x => x.t === k)) kws.push({t:k, custom:false}); });
+    o.kw.forEach(k => { if (!kws.find(x => x.t === k)) kws.push({t:k, type:'oblast'}); });
   }
   document.getElementById('ob-hint').textContent = sel.length
-    ? `Vybratých: ${sel.length} / 3 — kľúčové slová doplnené.`
+    ? `Vybratých: ${sel.length} / 3`
     : 'Vyberte 1–3 oblasti — kľúčové slová sa doplnia automaticky.';
-  renderOblasti(); renderKw();
+  renderOblasti();
+  renderKw();
 }
 
+// ── Render: KW pills ─────────────────────────────────────────
 function renderKw() {
-  document.getElementById('kw-pills').innerHTML = kws.map((k,i) =>
-    `<span class="pill ${k.custom?'pill-custom':'pill-auto'}">${k.t}<button class="pill-x" onclick="removeKw(${i})" aria-label="Odstrániť">×</button></span>`
-  ).join('');
+  document.getElementById('kw-pills').innerHTML = kws.map((k,i) => {
+    const cls = k.type==='oblast' ? 'pill-auto' : k.type==='org' ? 'pill-org' : 'pill-custom';
+    return `<span class="pill ${cls}">${k.t}<button class="pill-x" onclick="removeKw(${i})">×</button></span>`;
+  }).join('');
 }
 
 function removeKw(i) { kws.splice(i,1); renderKw(); }
@@ -379,8 +440,9 @@ function addKw() {
   const inp = document.getElementById('kw-input');
   const v = inp.value.trim().toLowerCase();
   if (!v) return;
-  if (!kws.find(x => x.t === v)) kws.push({t:v, custom:true});
-  inp.value = ''; renderKw();
+  if (!kws.find(x => x.t === v)) kws.push({t:v, type:'custom'});
+  inp.value = '';
+  renderKw();
 }
 
 function setFreq(i) {
@@ -388,16 +450,59 @@ function setFreq(i) {
   [0,1,2].forEach(j => document.getElementById('f'+j).classList.toggle('active', j===i));
 }
 
+// ── Submit → GitHub API ───────────────────────────────────────
 function submitForm() {
   const email = document.getElementById('email-input').value.trim();
   if (!email || !email.includes('@')) { alert('Zadajte platný email.'); return; }
+  if (selOrg === null) { alert('Vyberte typ organizácie.'); return; }
   if (sel.length === 0) { alert('Vyberte aspoň jednu oblasť záujmu.'); return; }
   if (kws.length === 0) { alert('Pridajte aspoň jedno kľúčové slovo.'); return; }
 
-  const fl = ['každý pondelok','2× týždenne','denne'];
-  const sme = document.getElementById('sme-cb').checked;
+  const typOrgNazov = TYPY_ORG[selOrg].nazov;
+  const oblasti     = sel.map(i => OBLASTI[i].name);
+  const kwCustom    = kws.filter(k => k.type === 'custom').map(k => k.t);
+  const freqLabel   = ['pondelok','streda+pondelok','denne'][freq];
+
+  const btn = document.querySelector('.submit-btn');
+  btn.textContent = 'Registrujem…';
+  btn.disabled = true;
+
+  fetch(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/register_user.yml/dispatches`, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + GITHUB_TOKEN,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      ref: 'main',
+      inputs: {
+        email    : email,
+        typ_org  : typOrgNazov,
+        oblasti  : JSON.stringify(oblasti),
+        kw_custom: JSON.stringify(kwCustom),
+        interval : freqLabel,
+      }
+    })
+  })
+  .then(r => {
+    if (r.status === 204) {
+      zobrazSuccess(email, freqLabel, typOrgNazov);
+    } else {
+      return r.text().then(t => { throw new Error(t); });
+    }
+  })
+  .catch(err => {
+    alert('Chyba registrácie. Skúste znova alebo napíšte na mecasysdata@gmail.com\n\n' + err.message);
+    btn.textContent = 'Aktivovať monitoring →';
+    btn.disabled = false;
+  });
+}
+
+function zobrazSuccess(email, freq, typOrg) {
+  const fl = {'pondelok':'každý pondelok','streda+pondelok':'2× týždenne','denne':'denne'};
   document.getElementById('s-text').textContent =
-    `Výzvy budú chodiť na ${email} — ${fl[freq]}${sme?' · len SME výzvy':''}.`;
+    `Výzvy budú chodiť na ${email} — ${fl[freq]||freq} · ${typOrg}`;
   document.getElementById('s-kw').innerHTML = kws.map(k =>
     `<span class="pill pill-auto">${k.t}</span>`).join('');
   document.getElementById('form-view').style.display = 'none';
@@ -407,8 +512,13 @@ function submitForm() {
 function resetForm() {
   document.getElementById('form-view').style.display = 'block';
   document.getElementById('success-view').style.display = 'none';
+  const btn = document.querySelector('.submit-btn');
+  btn.textContent = 'Aktivovať monitoring →';
+  btn.disabled = false;
 }
 
+// ── Init ──────────────────────────────────────────────────────
+renderOrg();
 renderOblasti();
 </script>
 </body>
