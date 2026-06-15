@@ -26,7 +26,6 @@
   html { scroll-behavior: smooth; }
   body { font-family: var(--font); color: var(--text); background: var(--bg); font-size: 15px; line-height: 1.6; }
 
-  /* NAV */
   nav {
     position: sticky; top: 0; z-index: 100;
     display: flex; align-items: center; justify-content: space-between;
@@ -44,7 +43,6 @@
   .btn-primary { background: var(--navy); color: #fff; }
   .btn-outline { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
 
-  /* HERO */
   .hero { padding: 72px 32px 64px; text-align: center; border-bottom: 1px solid var(--border); }
   .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--bg-teal); color: var(--teal-dark); border: 1px solid #9FE1CB; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 500; margin-bottom: 24px; }
   .hero-badge span { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; display: inline-block; }
@@ -52,14 +50,12 @@
   .hero p { font-size: 16px; color: var(--text-mid); max-width: 440px; margin: 0 auto 32px; line-height: 1.65; }
   .hero-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
-  /* STATS */
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border); }
   .stat { padding: 28px 24px; text-align: center; border-right: 1px solid var(--border); }
   .stat:last-child { border-right: none; }
   .stat-n { font-size: 28px; font-weight: 700; color: var(--navy); }
   .stat-l { font-size: 13px; color: var(--text-soft); margin-top: 4px; }
 
-  /* PROGRAMMES */
   .section { padding: 40px 32px; border-bottom: 1px solid var(--border); }
   .section-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 16px; }
   .prog-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -72,21 +68,18 @@
   .p-g { background: #F1EFE8; color: #444441; border-color: #D3D1C7; }
   .p-m { background: var(--bg-soft); color: var(--text-soft); border-color: var(--border); }
 
-  /* HOW IT WORKS */
   .how-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
   .how-step { background: var(--bg); padding: 20px 18px; }
   .how-num { font-size: 11px; font-weight: 600; color: var(--teal); letter-spacing: .06em; margin-bottom: 8px; }
   .how-title { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
   .how-desc { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
 
-  /* KONFIGURÁTOR */
   #konfigurator { padding: 40px 32px; background: var(--bg-soft); border-bottom: 1px solid var(--border); }
   .konfig-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 28px; max-width: 680px; margin: 0 auto; }
   .konfig-title { font-size: 18px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
   .konfig-sub { font-size: 14px; color: var(--text-mid); margin-bottom: 24px; }
   .field-label { font-size: 12px; font-weight: 600; color: var(--text-mid); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px; }
 
-  /* TYP ORGANIZÁCIE */
   .org-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 7px; margin-bottom: 20px; }
   .org-card { display: flex; align-items: center; gap: 10px; padding: 10px 13px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; background: var(--bg); transition: border-color .12s, background .12s; user-select: none; }
   .org-card:hover { border-color: #9FE1CB; background: #f8fdfb; }
@@ -95,7 +88,6 @@
   .org-name { font-size: 13px; font-weight: 600; color: var(--navy); }
   .org-card.active .org-name { color: var(--teal-dark); }
 
-  /* OBLASTI */
   .ob-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 7px; margin-bottom: 20px; }
   .ob-card { display: flex; align-items: flex-start; gap: 10px; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; background: var(--bg); transition: border-color .12s, background .12s; user-select: none; }
   .ob-card:hover { border-color: #9FE1CB; background: #f8fdfb; }
@@ -107,7 +99,6 @@
   .ob-card.active .ob-prog { color: var(--teal-dark); }
   .ob-hint { font-size: 12px; color: var(--text-soft); margin-top: -10px; margin-bottom: 20px; }
 
-  /* KĽÚČOVÉ SLOVÁ */
   .kw-box { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; margin-bottom: 20px; }
   .kw-sublabel { font-size: 11px; color: var(--text-soft); margin-bottom: 8px; }
   .pills { display: flex; flex-wrap: wrap; gap: 5px; min-height: 24px; margin-bottom: 10px; }
@@ -124,7 +115,6 @@
   .add-row button { height: 34px; padding: 0 13px; font-size: 13px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
   .add-row button:hover { background: var(--bg-soft); }
 
-  /* EMAIL + FREQ */
   .email-section { margin-bottom: 16px; }
   .email-input { width: 100%; height: 40px; font-size: 14px; border: 1px solid var(--border); border-radius: 8px; padding: 0 14px; color: var(--text); background: var(--bg); outline: none; margin-bottom: 10px; }
   .email-input:focus { border-color: var(--teal); }
@@ -136,7 +126,6 @@
   .submit-btn:hover { background: var(--navy-light); }
   .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
 
-  /* SUCCESS */
   .success-box { display: none; text-align: center; padding: 32px 24px; }
   .success-icon { width: 52px; height: 52px; background: var(--bg-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
   .success-icon svg { width: 24px; height: 24px; stroke: var(--teal); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
@@ -145,7 +134,6 @@
   .kw-summary { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 20px; }
   .reset-link { font-size: 13px; color: var(--text-soft); cursor: pointer; text-decoration: underline; }
 
-  /* FOOTER */
   footer { padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); }
   .footer-left { font-size: 13px; color: var(--text-soft); }
   .footer-links { display: flex; gap: 16px; }
@@ -202,26 +190,10 @@
 <section class="section" id="ako-to-funguje">
   <div class="section-label">Ako to funguje</div>
   <div class="how-grid">
-    <div class="how-step">
-      <div class="how-num">01</div>
-      <div class="how-title">Nastavíte profil</div>
-      <div class="how-desc">Vyberte typ organizácie a oblasti záujmu. Kľúčové slová sa doplnia automaticky.</div>
-    </div>
-    <div class="how-step">
-      <div class="how-num">02</div>
-      <div class="how-title">Skenujeme portál</div>
-      <div class="how-desc">Každý pondelok prehľadáme celý EC portál naprieč všetkými programami.</div>
-    </div>
-    <div class="how-step">
-      <div class="how-num">03</div>
-      <div class="how-title">Filtrujeme</div>
-      <div class="how-desc">Výzva musí vyhovovať vášmu typu organizácie AJ oblasti záujmu.</div>
-    </div>
-    <div class="how-step">
-      <div class="how-num">04</div>
-      <div class="how-title">Dostanete email</div>
-      <div class="how-desc">Prehľadný email s novými výzvami priamo na váš email.</div>
-    </div>
+    <div class="how-step"><div class="how-num">01</div><div class="how-title">Nastavíte profil</div><div class="how-desc">Vyberte typ organizácie a oblasti záujmu. Kľúčové slová sa doplnia automaticky.</div></div>
+    <div class="how-step"><div class="how-num">02</div><div class="how-title">Skenujeme portál</div><div class="how-desc">Každý pondelok prehľadáme celý EC portál naprieč všetkými programami.</div></div>
+    <div class="how-step"><div class="how-num">03</div><div class="how-title">Filtrujeme</div><div class="how-desc">Výzva musí vyhovovať vášmu typu organizácie AJ oblasti záujmu.</div></div>
+    <div class="how-step"><div class="how-num">04</div><div class="how-title">Dostanete email</div><div class="how-desc">Prehľadný email s novými výzvami priamo na váš email.</div></div>
   </div>
 </section>
 
@@ -251,22 +223,16 @@
       <div class="konfig-title">Nastavte váš monitoring</div>
       <div class="konfig-sub">Trvá to 2 minúty. Výzvy dostanete len tie, ktoré sú relevantné pre vás.</div>
 
-      <!-- TYP ORGANIZÁCIE -->
       <div class="field-label">Typ organizácie</div>
       <div class="org-grid" id="org-grid"></div>
 
-      <!-- OBLASTI -->
       <div class="field-label">Oblasti záujmu (max. 3)</div>
       <div class="ob-grid" id="ob-grid"></div>
       <div class="ob-hint" id="ob-hint">Vyberte 1–3 oblasti — kľúčové slová sa doplnia automaticky.</div>
 
-      <!-- KĽÚČOVÉ SLOVÁ -->
       <div class="field-label">Kľúčové slová</div>
       <div class="kw-box">
-        <div class="kw-sublabel">
-          🟦 z oblasti &nbsp;·&nbsp; 🟩 z typu org. &nbsp;·&nbsp; ⬜ vlastné
-          — ponechajte čo chcete, zmažte čo nechcete, pridajte vlastné
-        </div>
+        <div class="kw-sublabel">🟦 z oblasti &nbsp;·&nbsp; 🟩 z typu org. &nbsp;·&nbsp; ⬜ vlastné — ponechajte čo chcete, zmažte čo nechcete, pridajte vlastné</div>
         <div class="pills" id="kw-pills"></div>
         <div class="sep"></div>
         <div class="add-row">
@@ -275,7 +241,6 @@
         </div>
       </div>
 
-      <!-- EMAIL + INTERVAL -->
       <div class="email-section">
         <div class="field-label">Váš email</div>
         <input type="email" id="email-input" class="email-input" placeholder="vas@email.com">
@@ -289,7 +254,6 @@
       <button class="submit-btn" onclick="submitForm()">Aktivovať monitoring →</button>
     </div>
 
-    <!-- SUCCESS -->
     <div class="success-box" id="success-view">
       <div class="success-icon">
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
@@ -312,9 +276,8 @@
 </footer>
 
 <script>
-// ── GitHub config ─────────────────────────────────────────────
-const GITHUB_REPO  = 'mecasysdata/EuLooker';
-const GITHUB_TOKEN = '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';
+// ── Cloudflare Worker URL (token je bezpečne skrytý tam) ──────
+const WORKER_URL = 'https://eulooker-register.mecasysdata.workers.dev';
 
 // ── Typy organizácií ──────────────────────────────────────────
 const TYPY_ORG = [
@@ -360,13 +323,11 @@ const OBLASTI = [
     kw:['education technology','vocational training','digital skills','social innovation','edtech','reskilling','upskilling','vocational excellence'] },
 ];
 
-// ── Stav ──────────────────────────────────────────────────────
-let selOrg = null;   // index vybraného typu org
-let sel    = [];     // indexy vybraných oblastí
-let kws    = [];     // [{t, type: 'oblast'|'org'|'custom'}]
+let selOrg = null;
+let sel    = [];
+let kws    = [];
 let freq   = 0;
 
-// ── Render: Typ organizácie ───────────────────────────────────
 function renderOrg() {
   document.getElementById('org-grid').innerHTML = TYPY_ORG.map((o,i) => `
     <div class="org-card${selOrg===i?' active':''}" onclick="toggleOrg(${i})">
@@ -377,13 +338,8 @@ function renderOrg() {
 }
 
 function toggleOrg(i) {
-  // Odstráň staré org KW
-  if (selOrg !== null) {
-    const stareKw = TYPY_ORG[selOrg].kw;
-    kws = kws.filter(k => k.type !== 'org');
-  }
+  if (selOrg !== null) kws = kws.filter(k => k.type !== 'org');
   selOrg = (selOrg === i) ? null : i;
-  // Pridaj nové org KW
   if (selOrg !== null) {
     TYPY_ORG[selOrg].kw.forEach(k => {
       if (!kws.find(x => x.t === k)) kws.push({t:k, type:'org'});
@@ -393,7 +349,6 @@ function toggleOrg(i) {
   renderKw();
 }
 
-// ── Render: Oblasti ───────────────────────────────────────────
 function renderOblasti() {
   document.getElementById('ob-grid').innerHTML = OBLASTI.map((o,i) => `
     <div class="ob-card${sel.includes(i)?' active':''}${sel.length>=3&&!sel.includes(i)?' locked':''}" onclick="toggleOblast(${i})">
@@ -412,21 +367,15 @@ function toggleOblast(i) {
     sel.splice(idx, 1);
     kws = kws.filter(k => k.type !== 'oblast' || !o.kw.includes(k.t));
   } else {
-    if (sel.length >= 3) {
-      document.getElementById('ob-hint').textContent = 'Maximum sú 3 oblasti. Najprv odznačte jednu.';
-      return;
-    }
+    if (sel.length >= 3) { document.getElementById('ob-hint').textContent = 'Maximum sú 3 oblasti. Najprv odznačte jednu.'; return; }
     sel.push(i);
     o.kw.forEach(k => { if (!kws.find(x => x.t === k)) kws.push({t:k, type:'oblast'}); });
   }
-  document.getElementById('ob-hint').textContent = sel.length
-    ? `Vybratých: ${sel.length} / 3`
-    : 'Vyberte 1–3 oblasti — kľúčové slová sa doplnia automaticky.';
+  document.getElementById('ob-hint').textContent = sel.length ? `Vybratých: ${sel.length} / 3` : 'Vyberte 1–3 oblasti — kľúčové slová sa doplnia automaticky.';
   renderOblasti();
   renderKw();
 }
 
-// ── Render: KW pills ─────────────────────────────────────────
 function renderKw() {
   document.getElementById('kw-pills').innerHTML = kws.map((k,i) => {
     const cls = k.type==='oblast' ? 'pill-auto' : k.type==='org' ? 'pill-org' : 'pill-custom';
@@ -450,7 +399,7 @@ function setFreq(i) {
   [0,1,2].forEach(j => document.getElementById('f'+j).classList.toggle('active', j===i));
 }
 
-// ── Submit → GitHub API ───────────────────────────────────────
+// ── Submit → Cloudflare Worker → GitHub Actions ───────────────
 function submitForm() {
   const email = document.getElementById('email-input').value.trim();
   if (!email || !email.includes('@')) { alert('Zadajte platný email.'); return; }
@@ -467,29 +416,23 @@ function submitForm() {
   btn.textContent = 'Registrujem…';
   btn.disabled = true;
 
-  fetch(`https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/register_user.yml/dispatches`, {
+  fetch(WORKER_URL, {
     method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ' + GITHUB_TOKEN,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      ref: 'main',
-      inputs: {
-        email    : email,
-        typ_org  : typOrgNazov,
-        oblasti  : JSON.stringify(oblasti),
-        kw_custom: JSON.stringify(kwCustom),
-        interval : freqLabel,
-      }
+      email    : email,
+      typ_org  : typOrgNazov,
+      oblasti  : oblasti,
+      kw_custom: kwCustom,
+      interval : freqLabel,
     })
   })
-  .then(r => {
-    if (r.status === 204) {
+  .then(r => r.json())
+  .then(data => {
+    if (data.ok) {
       zobrazSuccess(email, freqLabel, typOrgNazov);
     } else {
-      return r.text().then(t => { throw new Error(t); });
+      throw new Error(data.error || 'Neznáma chyba');
     }
   })
   .catch(err => {
@@ -517,7 +460,6 @@ function resetForm() {
   btn.disabled = false;
 }
 
-// ── Init ──────────────────────────────────────────────────────
 renderOrg();
 renderOblasti();
 </script>
