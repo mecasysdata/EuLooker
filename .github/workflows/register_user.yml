@@ -27,6 +27,7 @@ permissions:
 jobs:
   register:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,52 +37,310 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Register user
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Register user + send welcome email + first results
         run: |
           python3 << 'PYEOF'
-          import json, os
-          from datetime import datetime
+          import json, os, re, time, smtplib
+          from datetime import datetime, timezone, timedelta
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+          from collections import defaultdict
 
-          SUBOR = "users.json"
+          # ── Konfigurácia emailu ───────────────────────────────
+          EMAIL_ODOSIELATEL = "mecasysdata@gmail.com"
+          EMAIL_HESLO       = os.environ['EMAIL_HESLO']
 
-          # Načítaj existujúcich užívateľov
-          if os.path.exists(SUBOR):
-              with open(SUBOR, 'r') as f:
-                  users = json.load(f)
-          else:
-              users = []
-
+          # ── Vstupné dáta ──────────────────────────────────────
+          SUBOR     = "users.json"
           email     = os.environ['INPUT_EMAIL'].strip().lower()
           typ_org   = os.environ['INPUT_TYP_ORG']
           oblasti   = json.loads(os.environ['INPUT_OBLASTI'])
           kw_custom = json.loads(os.environ['INPUT_KW_CUSTOM'])
           interval  = os.environ['INPUT_INTERVAL']
 
-          # Ak už existuje → aktualizuj, inak pridaj
+          # ── Uložiť užívateľa ──────────────────────────────────
+          if os.path.exists(SUBOR):
+              with open(SUBOR, 'r') as f:
+                  users = json.load(f)
+          else:
+              users = []
+
           existujuci = next((u for u in users if u['email'] == email), None)
           if existujuci:
-              existujuci['typ_org']   = typ_org
-              existujuci['oblasti']   = oblasti
-              existujuci['kw_custom'] = kw_custom
-              existujuci['interval']  = interval
-              existujuci['updated']   = datetime.now().strftime('%Y-%m-%d %H:%M')
+              existujuci.update({
+                  'typ_org': typ_org, 'oblasti': oblasti,
+                  'kw_custom': kw_custom, 'interval': interval,
+                  'updated': datetime.now().strftime('%Y-%m-%d %H:%M')
+              })
               print(f"✅ Aktualizovaný: {email}")
           else:
               users.append({
-                  "email"      : email,
-                  "typ_org"    : typ_org,
-                  "oblasti"    : oblasti,
-                  "kw_custom"  : kw_custom,
-                  "interval"   : interval,
-                  "registracia": datetime.now().strftime('%Y-%m-%d %H:%M'),
-                  "updated"    : datetime.now().strftime('%Y-%m-%d %H:%M'),
+                  'email': email, 'typ_org': typ_org,
+                  'oblasti': oblasti, 'kw_custom': kw_custom,
+                  'interval': interval,
+                  'registracia': datetime.now().strftime('%Y-%m-%d %H:%M'),
+                  'updated': datetime.now().strftime('%Y-%m-%d %H:%M'),
               })
               print(f"✅ Nový užívateľ: {email}")
 
-          print(f"Celkom užívateľov: {len(users)}")
-
           with open(SUBOR, 'w') as f:
               json.dump(users, f, indent=2, ensure_ascii=False)
+
+          # ── Typy organizácií KW ───────────────────────────────
+          TYPY_ORG_KW = {
+              'SME': ['sme','small and medium','smes','eic accelerator','cascade financing','for smes'],
+              'Veľký podnik': ['large enterprise','large company','large industry','for-profit','private company'],
+              'Vysoká škola / HEI': ['higher education','university','academic institution','hei','academia'],
+              'Výskumná org. (RTO)': ['research organisation','research organization','research center','rto','research institute'],
+              'Verejný sektor': ['public body','public authority','municipality','local authority','public administration'],
+              'NGO / Asociácia / Klaster': ['non-governmental','ngo','association','cluster','foundation','civil society'],
+              'Startup / Spin-off': ['startup','start-up','spin-off','spin-out','deep tech','eic pathfinder','scaleup'],
+              'Medzinárodná org.': ['international organisation','international organization','intergovernmental','multilateral'],
+          }
+
+          OBLASTI_KW = {
+              'Strojárstvo / Industry 4.0': ['industry 4.0','industry 5.0','advanced manufacturing','smart factory','digital twin','industrial automation','cobots','additive manufacturing','3d printing','industrial iot','made in europe','factory of the future'],
+              'AI / Robotika / Deep Tech': ['artificial intelligence','machine learning','robotics','autonomous systems','deep learning','generative ai','computer vision','edge computing','quantum computing','apply ai'],
+              'Zelená energia / Klíma': ['renewable energy','green hydrogen','carbon capture','energy storage','solar energy','wind energy','net zero','decarbonisation','energy efficiency','smart grid','clean energy'],
+              'Agro / Bio / Circular': ['precision agriculture','smart farming','bioeconomy','bio-based','biodegradable','sustainable packaging','soil health','microbiome','agritech','biomaterial'],
+              'Zdravie / Medicína / Biotech': ['medical device','diagnostics','drug development','clinical trial','personalised medicine','digital health','cancer research','biotechnology','antimicrobial','genomics'],
+              'Obrana / Bezpečnosť / Drony': ['drone','uav','unmanned','defence','dual-use','counter-drone','border surveillance','cbrn','naval','underwater','security technology','swarm'],
+              'Vesmír / Space Tech': ['satellite','earth observation','space exploration','copernicus','galileo','new space','remote sensing','space transportation'],
+              'Mobilita / Doprava / Smart City': ['electric vehicle','autonomous driving','urban mobility','smart city','zero emission vehicle','battery technology','hydrogen vehicle','sustainable transport'],
+              'Voda / Oceány / Životné prostredie': ['water purification','ocean cleaning','marine litter','water quality','blue economy','wastewater','aquaculture','desalination'],
+              'Vzdelávanie / Sociálna inovácia': ['education technology','vocational training','digital skills','social innovation','edtech','reskilling','upskilling','vocational excellence'],
+          }
+
+          PROGRAMME_MAP = {
+              '43108390': 'Horizon Europe', '44181033': 'EDF', '43152860': 'Digital Europe',
+              '43252405': 'LIFE', '43251567': 'CEF Energy', '43251589': 'CERV',
+              '43252368': 'ISF', '43252476': 'SMP / COSME', '43252517': 'ESF+',
+              '43298916': 'Euratom', '43353764': 'Erasmus+', '43637601': 'PPPA',
+              '44416173': 'Interreg / I3',
+          }
+
+          HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+
+          import requests
+
+          def _strip_html(text):
+              text = re.sub(r'<[^>]+>', ' ', text or '')
+              return re.sub(r'\s+', ' ', text).strip()
+
+          def _skrat(text, vety=4):
+              if not text or len(text) < 40: return text or '—'
+              sents = re.split(r'(?<=[.!?])\s+', text.strip())
+              sents = [s.strip() for s in sents if len(s.strip()) > 20]
+              if not sents: return (text[:500] + '…') if len(text) > 500 else text
+              r = ' '.join(sents[:vety])
+              return (r[:800] + '…') if len(r) > 800 else r
+
+          def _obsahuje(text, slova):
+              t = text.lower()
+              for w in slova:
+                  if len(w.split()) > 1:
+                      if w in t: return True
+                  else:
+                      if re.search(r'\b' + re.escape(w) + r'\b', t): return True
+              return False
+
+          def _najdi(text, slova):
+              t = text.lower()
+              found = []
+              for w in slova:
+                  if len(w.split()) > 1:
+                      if w in t: found.append(w)
+                  else:
+                      if re.search(r'\b' + re.escape(w) + r'\b', t): found.append(w)
+              return found
+
+          def hladaj_kw(slovo, page=1):
+              url = f"https://api.tech.ec.europa.eu/search-api/prod/rest/search?apiKey=SEDIA&text={slovo}&pageSize=50&pageNumber={page}"
+              files = {
+                  "sort": (None, json.dumps({"order": "DESC", "field": "startDate"}), "application/json"),
+                  "query": (None, json.dumps({"bool": {"must": [
+                      {"terms": {"type": ["1","2","8"]}},
+                      {"terms": {"status": ["31094501","31094502"]}}
+                  ]}}), "application/json"),
+                  "languages": (None, json.dumps(["en"]), "application/json"),
+              }
+              r = requests.post(url, files=files, headers=HEADERS, timeout=30)
+              return r.json()
+
+          def ziskaj_detail(identifier):
+              url = f"https://ec.europa.eu/info/funding-tenders/opportunities/data/topicDetails/{identifier.lower()}.json"
+              try:
+                  r = requests.get(url, headers=HEADERS, timeout=15)
+                  if r.status_code == 200: return r.json().get('TopicDetails', {})
+              except: pass
+              return {}
+
+          # ── Hľadaj výzvy pre nového užívateľa ────────────────
+          print(f"\n🔍 Hľadám výzvy pre {email} ...")
+          typ_org_kw = TYPY_ORG_KW.get(typ_org, [])
+
+          # Zozbieraj všetky KW pre hľadanie
+          vsetky_search_kw = list(typ_org_kw[:3])
+          for o in oblasti:
+              for nazov, kw_list in OBLASTI_KW.items():
+                  if nazov in o:
+                      vsetky_search_kw.extend(kw_list[:3])
+                      break
+          vsetky_search_kw.extend(kw_custom)
+          vsetky_search_kw = list(set(vsetky_search_kw))[:15]
+
+          vsetky_raw = {}
+          for slovo in vsetky_search_kw:
+              try:
+                  data = hladaj_kw(slovo)
+                  for hit in data.get('results', []):
+                      ident = hit['metadata']['identifier'][0]
+                      if ident not in vsetky_raw:
+                          vsetky_raw[ident] = hit
+                  time.sleep(0.3)
+              except Exception as e:
+                  print(f"  ⚠️ Chyba pri '{slovo}': {e}")
+
+          print(f"  Stiahnutých výziev: {len(vsetky_raw)}")
+
+          # Klasifikuj
+          oblast_kw_all = []
+          for o in oblasti:
+              for nazov, kw_list in OBLASTI_KW.items():
+                  if nazov in o:
+                      oblast_kw_all.extend(kw_list)
+
+          oblast_kw_all.extend(kw_custom)
+
+          vysledky = []
+          for ident, hit in list(vsetky_raw.items())[:200]:
+              detail = ziskaj_detail(ident)
+              if not detail:
+                  time.sleep(0.2)
+                  continue
+              nazov  = hit.get('summary', '')
+              popis  = _strip_html(detail.get('description', ''))
+              ft     = f"{nazov} {popis}".lower()
+              ma_oblast = _obsahuje(ft, oblast_kw_all)
+              ma_org    = _obsahuje(ft, typ_org_kw)
+              if ma_oblast and ma_org:
+                  meta     = hit['metadata']
+                  prog_raw = meta.get('frameworkProgramme', [''])[0]
+                  vysledky.append({
+                      'nazov'    : nazov,
+                      'programme': PROGRAMME_MAP.get(str(prog_raw), str(prog_raw)),
+                      'status'   : meta.get('status', [''])[0],
+                      'startDate': meta.get('startDate', [''])[0][:10],
+                      'deadline' : meta.get('deadlineDate', [''])[0][:10],
+                      'zhrnutie' : _skrat(popis, 4),
+                      'link'     : meta.get('url', [''])[0],
+                      'kw_oblast': _najdi(ft, oblast_kw_all)[:4],
+                      'kw_org'   : _najdi(ft, typ_org_kw)[:2],
+                  })
+              time.sleep(0.3)
+
+          print(f"  Nájdených relevantných výziev: {len(vysledky)}")
+
+          # ── Pošli uvítací email + výsledky ────────────────────
+          def odosli(predmet, html):
+              msg = MIMEMultipart("alternative")
+              msg["Subject"] = predmet
+              msg["From"]    = EMAIL_ODOSIELATEL
+              msg["To"]      = email
+              msg.attach(MIMEText(html, "html", "utf-8"))
+              with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+                  s.login(EMAIL_ODOSIELATEL, EMAIL_HESLO)
+                  s.sendmail(EMAIL_ODOSIELATEL, email, msg.as_string())
+              print(f"✅ Email odoslaný na {email}")
+
+          datum     = datetime.now().strftime("%d. %m. %Y")
+          oblasti_str = ', '.join(oblasti)
+          interval_sk = {'pondelok': 'každý pondelok', 'streda+pondelok': '2× týždenne', 'denne': 'denne'}.get(interval, interval)
+
+          if not vysledky:
+              predmet = f"EuLooker – Vitajte! / Welcome!"
+              html = f"""
+              <html><body style="font-family:Arial,sans-serif;max-width:780px;margin:auto;padding:24px;">
+                <div style="background:#1a2340;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;">
+                  <h1 style="margin:0;font-size:22px;">👋 Vitajte v EuLooker!</h1>
+                  <p style="margin:6px 0 0;font-size:14px;opacity:.85;">Welcome to EuLooker!</p>
+                </div>
+                <div style="border:1px solid #dde3ea;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+                  <p style="font-size:15px;margin-bottom:12px;">
+                    Váš monitoring EU výziev bol aktivovaný. Výzvy vám budeme posielať <b>{interval_sk}</b>.
+                  </p>
+                  <p style="font-size:13px;color:#555;margin-bottom:12px;">
+                    <b>Typ organizácie:</b> {typ_org} &nbsp;·&nbsp; <b>Oblasti:</b> {oblasti_str}
+                  </p>
+                  <p style="font-size:13px;color:#888;margin-bottom:20px;">
+                    Tento týždeň sme pre váš profil nenašli žiadne nové výzvy. Skúsime znova budúci týždeň.
+                  </p>
+                  <hr style="border:none;border-top:1px solid #e0e6ef;margin:20px 0;">
+                  <p style="font-size:15px;margin-bottom:12px;">
+                    Your EU grants monitoring has been activated. You will receive calls <b>{interval_sk}</b>.
+                  </p>
+                  <p style="font-size:13px;color:#555;">
+                    <b>Organisation type:</b> {typ_org} &nbsp;·&nbsp; <b>Areas:</b> {oblasti_str}
+                  </p>
+                  <p style="font-size:13px;color:#888;margin-top:12px;">
+                    No matching calls found this week. We'll try again next week.
+                  </p>
+                  <hr style="border:none;border-top:1px solid #e0e6ef;margin:20px 0 12px;">
+                  <p style="font-size:12px;color:#888;">
+                    EuLooker · MecaSys · 
+                    <a href="https://mecasysdata.github.io/EuLooker" style="color:#1565c0;">mecasysdata.github.io/EuLooker</a>
+                  </p>
+                </div>
+              </body></html>"""
+          else:
+              predmet = f"EuLooker – Vitajte! {len(vysledky)} výziev pre vás / {len(vysledky)} calls for you"
+              bloky = ""
+              for v in vysledky:
+                  kw_text = ", ".join(v['kw_oblast'][:4]) if v['kw_oblast'] else "—"
+                  bloky += f"""
+                  <div style="border:1px solid #dde3ea;border-radius:8px;padding:16px 20px;margin-bottom:16px;background:#fafbfc;">
+                    <h3 style="margin:0 0 6px;color:#1a2340;font-size:14px;">{v['nazov']}</h3>
+                    <p style="margin:0 0 6px;font-size:12px;color:#555;">
+                      <b>Program:</b> {v['programme']} &nbsp;|&nbsp;
+                      <b>Otvorenie / Opens:</b> {v['startDate']} &nbsp;|&nbsp;
+                      <b>Uzávierka / Deadline:</b> {v['deadline']}
+                    </p>
+                    <p style="margin:0 0 6px;font-size:13px;color:#333;line-height:1.5;">{v['zhrnutie']}</p>
+                    <p style="margin:0 0 4px;font-size:11px;color:#777;"><b>KW:</b> {kw_text}</p>
+                    <a href="{v['link']}" style="color:#1565c0;font-size:12px;">🔗 {v['link']}</a>
+                  </div>"""
+
+              html = f"""
+              <html><body style="font-family:Arial,sans-serif;max-width:780px;margin:auto;padding:24px;">
+                <div style="background:#1a2340;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;">
+                  <h1 style="margin:0;font-size:22px;">👋 Vitajte v EuLooker! / Welcome to EuLooker!</h1>
+                  <p style="margin:6px 0 0;font-size:14px;opacity:.85;">
+                    Našli sme <b>{len(vysledky)}</b> výziev pre váš profil · Found <b>{len(vysledky)}</b> calls for your profile
+                  </p>
+                </div>
+                <div style="border:1px solid #dde3ea;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+                  <p style="font-size:14px;margin-bottom:8px;">
+                    Váš monitoring bol aktivovaný. Ďalšie výzvy dostanete <b>{interval_sk}</b>.
+                  </p>
+                  <p style="font-size:13px;color:#555;margin-bottom:20px;">
+                    <b>Typ org.:</b> {typ_org} &nbsp;·&nbsp; <b>Oblasti:</b> {oblasti_str}
+                  </p>
+                  {bloky}
+                  <hr style="border:none;border-top:1px solid #e0e6ef;margin:24px 0 12px;">
+                  <p style="font-size:14px;margin-bottom:8px;">
+                    Your monitoring is active. Next update: <b>{interval_sk}</b>.
+                  </p>
+                  <p style="font-size:12px;color:#888;">
+                    EuLooker · MecaSys · 
+                    <a href="https://mecasysdata.github.io/EuLooker" style="color:#1565c0;">mecasysdata.github.io/EuLooker</a>
+                  </p>
+                </div>
+              </body></html>"""
+
+          odosli(predmet, html)
           PYEOF
         env:
           INPUT_EMAIL:     ${{ github.event.inputs.email }}
@@ -89,6 +348,7 @@ jobs:
           INPUT_OBLASTI:   ${{ github.event.inputs.oblasti }}
           INPUT_KW_CUSTOM: ${{ github.event.inputs.kw_custom }}
           INPUT_INTERVAL:  ${{ github.event.inputs.interval }}
+          EMAIL_HESLO:     ${{ secrets.EMAIL_HESLO }}
 
       - name: Save users.json
         run: |
