@@ -11,5 +11,18 @@
     "interval": "denne",
     "registracia": "2026-06-15 14:33",
     "updated": "2026-06-19 03:10"
+  },
+  {
+    "email": "maria.genzorova@mecasys.sk",
+    "typ_org": "SME",
+    "oblasti": [
+      "Strojárstvo / Industry 4.0",
+      "Agro / Bio / Circular",
+      "Vesmír / Space Tech"
+    ],
+    "kw_custom": [],
+    "interval": "7dni",
+    "registracia": "2026-06-19 04:22",
+    "updated": "2026-06-19 04:22"
   }
 ]
