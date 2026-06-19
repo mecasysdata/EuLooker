@@ -19,7 +19,7 @@ on:
       interval:
         description: 'Interval posielania'
         required: false
-        default: 'pondelok'
+        default: '7dni'
 
 permissions:
   contents: write
@@ -111,11 +111,11 @@ jobs:
           interval  = os.environ['INPUT_INTERVAL']
 
           oblasti_str = ', '.join(oblasti)
-          interval_sk = {
-              'pondelok': 'každý pondelok / every Monday',
-              'streda+pondelok': '2× týždenne / twice a week',
-              'denne': 'denne / daily'
-          }.get(interval, interval)
+          if '7' in str(interval): dni_txt = '7 dní / 7 days'
+          elif '14' in str(interval): dni_txt = '14 dní / 14 days'
+          elif '30' in str(interval): dni_txt = '30 dní / 30 days'
+          else: dni_txt = interval
+          interval_sk = f'1× za {dni_txt}'
 
           html = f"""
           <html><body style="font-family:Arial,sans-serif;max-width:780px;margin:auto;padding:24px;">
