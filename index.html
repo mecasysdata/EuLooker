@@ -5,152 +5,116 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EuLooker — EU Grants Monitor</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; color: #1a1a1a; font-size: 13px; line-height: 1.5; background: #fff; }
 
-  :root {
-    --navy: #1a2340;
-    --navy-light: #253158;
-    --teal: #1D9E75;
-    --teal-light: #E1F5EE;
-    --teal-dark: #085041;
-    --text: #1a1a1a;
-    --text-mid: #555;
-    --text-soft: #888;
-    --border: #e4e8ef;
-    --bg: #ffffff;
-    --bg-soft: #f7f8fa;
-    --bg-teal: #E1F5EE;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-  }
+/* NAV */
+nav { display: flex; align-items: center; justify-content: space-between; padding: 0 24px; height: 44px; border-bottom: 1px solid #e4e8ef; }
+.logo { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; color: #1a2340; text-decoration: none; }
+.logo-mark { width: 24px; height: 24px; background: #1a2340; border-radius: 5px; display: flex; align-items: center; justify-content: center; }
+.logo-mark svg { width: 13px; height: 13px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
+.nav-badge { font-size: 11px; background: #E1F5EE; color: #085041; border: 1px solid #9FE1CB; border-radius: 20px; padding: 2px 10px; }
 
-  html { scroll-behavior: smooth; }
-  body { font-family: var(--font); color: var(--text); background: var(--bg); font-size: 15px; line-height: 1.6; }
+/* HERO */
+.hero { padding: 20px 24px 16px; border-bottom: 1px solid #e4e8ef; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.hero-title { font-size: 22px; font-weight: 700; line-height: 1.25; color: #1a2340; max-width: 520px; margin-bottom: 8px; letter-spacing: -.3px; }
+.hero-sub { font-size: 13px; color: #555; max-width: 440px; margin-bottom: 14px; line-height: 1.6; }
+.hero-btns { display: flex; gap: 8px; margin-bottom: 16px; }
+.btn-primary { padding: 7px 18px; background: #1a2340; color: #fff; border: none; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 5px; }
+.btn-outline { padding: 7px 18px; background: #fff; color: #1a1a1a; border: 1px solid #e4e8ef; border-radius: 7px; font-size: 12px; font-weight: 500; cursor: pointer; text-decoration: none; }
 
-  nav {
-    position: sticky; top: 0; z-index: 100;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 32px; height: 58px;
-    background: var(--bg); border-bottom: 1px solid var(--border);
-  }
-  .logo { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 600; color: var(--navy); text-decoration: none; }
-  .logo-mark { width: 28px; height: 28px; background: var(--navy); border-radius: 7px; display: flex; align-items: center; justify-content: center; }
-  .logo-mark svg { width: 16px; height: 16px; fill: none; stroke: #fff; stroke-width: 2; stroke-linecap: round; }
-  .nav-right { display: flex; align-items: center; gap: 8px; }
-  .nav-link { font-size: 14px; color: var(--text-mid); text-decoration: none; padding: 6px 10px; border-radius: 6px; }
-  .nav-link:hover { background: var(--bg-soft); }
-  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; text-decoration: none; transition: opacity .15s; }
-  .btn:hover { opacity: .88; }
-  .btn-primary { background: var(--navy); color: #fff; }
-  .btn-outline { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+/* STATS */
+.stats-row { display: flex; gap: 28px; padding-top: 14px; border-top: 1px solid #e4e8ef; width: 100%; justify-content: center; margin-bottom: 14px; }
+.stat-item { display: flex; align-items: baseline; gap: 6px; }
+.stat-n { font-size: 20px; font-weight: 700; color: #1a2340; }
+.stat-l { font-size: 11px; color: #888; }
 
-  .hero { padding: 72px 32px 64px; text-align: center; border-bottom: 1px solid var(--border); }
-  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--bg-teal); color: var(--teal-dark); border: 1px solid #9FE1CB; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 500; margin-bottom: 24px; }
-  .hero-badge span { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; display: inline-block; }
-  .hero h1 { font-size: 38px; font-weight: 700; line-height: 1.18; color: var(--navy); max-width: 560px; margin: 0 auto 16px; letter-spacing: -.5px; }
-  .hero p { font-size: 16px; color: var(--text-mid); max-width: 440px; margin: 0 auto 32px; line-height: 1.65; }
-  .hero-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+/* PROGRAMMES */
+.prog-row { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.prog-tag { padding: 2px 7px; border-radius: 20px; font-size: 10px; font-weight: 500; border: 1px solid; }
+.p-h { background: #E6F1FB; color: #0C447C; border-color: #B5D4F4; }
+.p-e { background: #FCEBEB; color: #791F1F; border-color: #F7C1C1; }
+.p-l { background: #EAF3DE; color: #27500A; border-color: #C0DD97; }
+.p-i { background: #EEEDFE; color: #3C3489; border-color: #CECBF6; }
+.p-d { background: #FAEEDA; color: #633806; border-color: #FAC775; }
+.p-g { background: #F1EFE8; color: #444441; border-color: #D3D1C7; }
 
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); border-bottom: 1px solid var(--border); }
-  .stat { padding: 28px 24px; text-align: center; border-right: 1px solid var(--border); }
-  .stat:last-child { border-right: none; }
-  .stat-n { font-size: 28px; font-weight: 700; color: var(--navy); }
-  .stat-l { font-size: 13px; color: var(--text-soft); margin-top: 4px; }
+/* HOW */
+.how-row { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid #e4e8ef; border-top: 1px solid #e4e8ef; }
+.how-step { padding: 10px 18px; border-right: 1px solid #e4e8ef; }
+.how-step:last-child { border-right: none; }
+.how-num { font-size: 10px; font-weight: 600; color: #1D9E75; letter-spacing: .06em; margin-bottom: 3px; }
+.how-title { font-size: 12px; font-weight: 600; color: #1a2340; margin-bottom: 2px; }
+.how-desc { font-size: 11px; color: #555; }
 
-  .section { padding: 40px 32px; border-bottom: 1px solid var(--border); }
-  .section-label { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 16px; }
-  .prog-wrap { display: flex; flex-wrap: wrap; gap: 7px; }
-  .prog-tag { padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; border: 1px solid; }
-  .p-h { background: #E6F1FB; color: #0C447C; border-color: #B5D4F4; }
-  .p-e { background: #FCEBEB; color: #791F1F; border-color: #F7C1C1; }
-  .p-l { background: #EAF3DE; color: #27500A; border-color: #C0DD97; }
-  .p-i { background: #EEEDFE; color: #3C3489; border-color: #CECBF6; }
-  .p-d { background: #FAEEDA; color: #633806; border-color: #FAC775; }
-  .p-g { background: #F1EFE8; color: #444441; border-color: #D3D1C7; }
-  .p-m { background: var(--bg-soft); color: var(--text-soft); border-color: var(--border); }
+/* KONFIG */
+.konfig { padding: 14px 24px 20px; }
+.konfig-title { font-size: 15px; font-weight: 600; color: #1a2340; margin-bottom: 2px; }
+.konfig-sub { font-size: 12px; color: #555; margin-bottom: 12px; }
 
-  .how-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-top: 16px; }
-  .how-step { background: var(--bg); padding: 20px 18px; }
-  .how-num { font-size: 11px; font-weight: 600; color: var(--teal); letter-spacing: .06em; margin-bottom: 8px; }
-  .how-title { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 5px; }
-  .how-desc { font-size: 13px; color: var(--text-mid); line-height: 1.5; }
+.el-label { font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: #888; margin-bottom: 6px; margin-top: 12px; }
 
-  #konfigurator { padding: 40px 32px; background: var(--bg-soft); border-bottom: 1px solid var(--border); }
-  .konfig-card { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 28px; max-width: 680px; margin: 0 auto; }
-  .konfig-title { font-size: 18px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
-  .konfig-sub { font-size: 14px; color: var(--text-mid); margin-bottom: 24px; }
-  .field-label { font-size: 12px; font-weight: 600; color: var(--text-mid); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 10px; }
+.el-grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; }
+.el-grid5 { display: grid; grid-template-columns: repeat(5,1fr); gap: 5px; }
+.el-grid5 .el-card { padding: 10px 10px; min-height: 70px; }
 
-  .org-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 7px; margin-bottom: 20px; }
-  .org-card { display: flex; align-items: center; gap: 10px; padding: 10px 13px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; background: var(--bg); transition: border-color .12s, background .12s; user-select: none; }
-  .org-card:hover { border-color: #9FE1CB; background: #f8fdfb; }
-  .org-card.active { border-color: var(--teal); background: var(--bg-teal); }
-  .org-icon { font-size: 18px; flex-shrink: 0; }
-  .org-name { font-size: 13px; font-weight: 600; color: var(--navy); }
-  .org-card.active .org-name { color: var(--teal-dark); }
+.el-card { display: flex; flex-direction: column; gap: 2px; padding: 7px 9px; border: 1px solid #e4e8ef; border-radius: 7px; cursor: pointer; background: #fff; transition: border-color .12s, background .12s; user-select: none; }
+.el-card:hover { border-color: #1D9E75; background: #E1F5EE; }
+.el-card.active { border-color: #1D9E75; background: #E1F5EE; }
+.el-card.locked { opacity: .35; pointer-events: none; }
+.el-card-top { display: flex; align-items: flex-start; gap: 5px; font-size: 11px; font-weight: 600; color: #1a2340; line-height: 1.35; }
+.el-card.active .el-card-top { color: #085041; }
+.el-card-sub { font-size: 10px; color: #888; }
+.el-card.active .el-card-sub { color: #0F6E56; }
 
-  .ob-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 7px; margin-bottom: 20px; }
-  .ob-card { display: flex; align-items: flex-start; gap: 10px; padding: 11px 13px; border: 1px solid var(--border); border-radius: 9px; cursor: pointer; background: var(--bg); transition: border-color .12s, background .12s; user-select: none; }
-  .ob-card:hover { border-color: #9FE1CB; background: #f8fdfb; }
-  .ob-card.active { border-color: var(--teal); background: var(--bg-teal); }
-  .ob-card.locked { opacity: .35; pointer-events: none; }
-  .ob-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-  .ob-name { font-size: 13px; font-weight: 600; color: var(--navy); line-height: 1.3; }
-  .ob-prog { font-size: 11px; color: var(--text-soft); margin-top: 1px; }
-  .ob-card.active .ob-prog { color: var(--teal-dark); }
-  .ob-hint { font-size: 12px; color: var(--text-soft); margin-top: -10px; margin-bottom: 20px; }
+.el-hint { font-size: 11px; color: #888; margin: 4px 0 10px; }
 
-  .kw-box { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 9px; padding: 12px 14px; margin-bottom: 20px; }
-  .kw-sublabel { font-size: 11px; color: var(--text-soft); margin-bottom: 8px; }
-  .pills { display: flex; flex-wrap: wrap; gap: 5px; min-height: 24px; margin-bottom: 10px; }
-  .pill { display: inline-flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 20px; font-size: 12px; }
-  .pill-auto { background: #E6F1FB; color: #0C447C; border: 1px solid #B5D4F4; }
-  .pill-org  { background: #EAF3DE; color: #27500A; border: 1px solid #C0DD97; }
-  .pill-custom { background: var(--bg-soft); color: var(--text); border: 1px solid var(--border); }
-  .pill-x { background: none; border: none; cursor: pointer; color: inherit; opacity: .5; font-size: 12px; line-height: 1; padding: 0; }
-  .pill-x:hover { opacity: 1; }
-  .sep { border: none; border-top: 1px solid var(--border); margin: 10px 0; }
-  .add-row { display: flex; gap: 7px; }
-  .add-row input { flex: 1; height: 34px; font-size: 13px; border: 1px solid var(--border); border-radius: 7px; padding: 0 11px; background: var(--bg); color: var(--text); outline: none; }
-  .add-row input:focus { border-color: var(--teal); }
-  .add-row button { height: 34px; padding: 0 13px; font-size: 13px; background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
-  .add-row button:hover { background: var(--bg-soft); }
+.el-kw-box { background: #f7f8fa; border: 1px solid #e4e8ef; border-radius: 7px; padding: 8px 10px; margin-bottom: 10px; }
+.el-kw-sub { font-size: 10px; color: #888; margin-bottom: 6px; }
+.el-pills { display: flex; flex-wrap: wrap; gap: 4px; min-height: 20px; margin-bottom: 6px; }
+.el-pill { display: inline-flex; align-items: center; gap: 3px; padding: 2px 7px; border-radius: 20px; font-size: 11px; }
+.el-pill-oblast { background: #E6F1FB; color: #0C447C; border: 1px solid #B5D4F4; }
+.el-pill-org { background: #EAF3DE; color: #27500A; border: 1px solid #C0DD97; }
+.el-pill-custom { background: #f7f8fa; color: #1a1a1a; border: 1px solid #e4e8ef; }
+.el-pill-x { background: none; border: none; cursor: pointer; color: inherit; opacity: .5; font-size: 10px; padding: 0; line-height: 1; }
+.el-pill-x:hover { opacity: 1; }
+.el-sep { border: none; border-top: 1px solid #e4e8ef; margin: 6px 0; }
+.el-add-row { display: flex; gap: 6px; }
+.el-add-row input { flex: 1; height: 30px; font-size: 12px; border: 1px solid #e4e8ef; border-radius: 6px; padding: 0 10px; outline: none; background: #fff; color: #1a1a1a; }
+.el-add-row input:focus { border-color: #1D9E75; }
+.el-add-row button { height: 30px; padding: 0 12px; font-size: 12px; background: #fff; color: #1a1a1a; border: 1px solid #e4e8ef; border-radius: 6px; cursor: pointer; }
+.el-add-row button:hover { background: #f7f8fa; }
 
-  .email-section { margin-bottom: 16px; }
-  .email-input { width: 100%; height: 40px; font-size: 14px; border: 1px solid var(--border); border-radius: 8px; padding: 0 14px; color: var(--text); background: var(--bg); outline: none; margin-bottom: 10px; }
-  .email-input:focus { border-color: var(--teal); }
-  .freq-row { display: flex; gap: 6px; margin-bottom: 16px; }
-  .freq-btn { flex: 1; height: 32px; font-size: 12px; border: 1px solid var(--border); border-radius: 7px; background: var(--bg); color: var(--text-mid); cursor: pointer; }
-  .freq-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+.el-bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: end; }
+.el-group { display: flex; flex-direction: column; gap: 5px; }
+.el-group label { font-size: 10px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: #888; }
+.el-group input[type=email] { height: 34px; font-size: 13px; border: 1px solid #e4e8ef; border-radius: 7px; padding: 0 12px; outline: none; background: #fff; color: #1a1a1a; }
+.el-group input[type=email]:focus { border-color: #1D9E75; }
+.el-freq { display: flex; gap: 5px; }
+.el-freq button { flex: 1; height: 34px; font-size: 11px; border: 1px solid #e4e8ef; border-radius: 6px; background: #fff; color: #555; cursor: pointer; }
+.el-freq button.active { background: #1a2340; color: #fff; border-color: #1a2340; }
+.el-submit { width: 100%; height: 40px; background: #1a2340; color: #fff; border: none; border-radius: 7px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 12px; transition: opacity .15s; }
+.el-submit:hover { opacity: .88; }
+.el-submit:disabled { opacity: .5; cursor: not-allowed; }
 
-  .submit-btn { width: 100%; height: 44px; background: var(--navy); color: #fff; border: none; border-radius: 9px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s; }
-  .submit-btn:hover { background: var(--navy-light); }
-  .submit-btn:disabled { opacity: .6; cursor: not-allowed; }
+/* SUCCESS */
+.el-success { display: none; text-align: center; padding: 40px; }
+.el-check { width: 48px; height: 48px; background: #E1F5EE; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+.el-check svg { width: 22px; height: 22px; stroke: #1D9E75; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.el-reset { font-size: 12px; color: #888; cursor: pointer; text-decoration: underline; }
 
-  .success-box { display: none; text-align: center; padding: 32px 24px; }
-  .success-icon { width: 52px; height: 52px; background: var(--bg-teal); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
-  .success-icon svg { width: 24px; height: 24px; stroke: var(--teal); stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
-  .success-box h3 { font-size: 18px; font-weight: 600; color: var(--navy); margin-bottom: 8px; }
-  .success-box p { font-size: 14px; color: var(--text-mid); margin-bottom: 16px; }
-  .kw-summary { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 20px; }
-  .reset-link { font-size: 13px; color: var(--text-soft); cursor: pointer; text-decoration: underline; }
+/* FOOTER */
+footer { padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #e4e8ef; }
+footer span { font-size: 11px; color: #888; }
+footer a { font-size: 11px; color: #888; text-decoration: none; margin-left: 12px; }
+footer a:hover { color: #1a1a1a; }
 
-  footer { padding: 24px 32px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); }
-  .footer-left { font-size: 13px; color: var(--text-soft); }
-  .footer-links { display: flex; gap: 16px; }
-  .footer-links a { font-size: 13px; color: var(--text-soft); text-decoration: none; }
-  .footer-links a:hover { color: var(--text); }
-
-  @media (max-width: 600px) {
-    nav { padding: 0 16px; }
-    .hero { padding: 48px 20px 40px; }
-    .hero h1 { font-size: 26px; }
-    .section, #konfigurator { padding: 28px 16px; }
-    .stats { grid-template-columns: 1fr; }
-    .stat { border-right: none; border-bottom: 1px solid var(--border); }
-    .how-grid { grid-template-columns: 1fr 1fr; }
-    .org-grid, .ob-grid { grid-template-columns: 1fr; }
-    footer { flex-direction: column; gap: 12px; text-align: center; }
-  }
+@media (max-width: 640px) {
+  .el-grid4, .el-grid5 { grid-template-columns: repeat(2,1fr); }
+  .el-bottom-row { grid-template-columns: 1fr; }
+  .how-row { grid-template-columns: repeat(2,1fr); }
+  .stats-row { gap: 16px; }
+}
 </style>
 </head>
 <body>
@@ -162,44 +126,25 @@
     </div>
     EuLooker
   </a>
-  <div class="nav-right">
-    <a href="#ako-to-funguje" class="nav-link">Ako to funguje</a>
-    <a href="#konfigurator" class="btn btn-primary">Nastaviť monitoring</a>
-  </div>
+  <span class="nav-badge">200+ EU programov · zadarmo</span>
 </nav>
 
 <section class="hero">
-  <div class="hero-badge"><span></span> 200+ EU programov · zadarmo navždy</div>
-  <h1>Nepremešajte žiadnu EU výzvu pre vašu organizáciu</h1>
-  <p>Automatický monitoring EC portálu. Dostanete len výzvy relevantné pre váš typ organizácie a oblasti záujmu.</p>
+  <h1 class="hero-title">Nepremeškajte žiadnu EU výzvu pre vašu organizáciu</h1>
+  <p class="hero-sub">Automatický monitoring EC portálu. Dostanete len výzvy relevantné pre váš typ organizácie a oblasti záujmu.</p>
   <div class="hero-btns">
-    <a href="#konfigurator" class="btn btn-primary">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    <a href="#konfig" class="btn-primary">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       Nastaviť monitoring
     </a>
-    <a href="#ako-to-funguje" class="btn btn-outline">Ako to funguje</a>
+    <a href="#how" class="btn-outline">Ako to funguje</a>
   </div>
-</section>
-
-<div class="stats">
-  <div class="stat"><div class="stat-n">200+</div><div class="stat-l">EU programov</div></div>
-  <div class="stat"><div class="stat-n">700+</div><div class="stat-l">aktívnych výziev</div></div>
-  <div class="stat"><div class="stat-n">zadarmo</div><div class="stat-l">vždy a navždy</div></div>
-</div>
-
-<section class="section" id="ako-to-funguje">
-  <div class="section-label">Ako to funguje</div>
-  <div class="how-grid">
-    <div class="how-step"><div class="how-num">01</div><div class="how-title">Nastavíte profil</div><div class="how-desc">Vyberte typ organizácie a oblasti záujmu. Kľúčové slová sa doplnia automaticky.</div></div>
-    <div class="how-step"><div class="how-num">02</div><div class="how-title">Skenujeme portál</div><div class="how-desc">Každý pondelok prehľadáme celý EC portál naprieč všetkými programami.</div></div>
-    <div class="how-step"><div class="how-num">03</div><div class="how-title">Filtrujeme</div><div class="how-desc">Výzva musí vyhovovať vášmu typu organizácie AJ oblasti záujmu.</div></div>
-    <div class="how-step"><div class="how-num">04</div><div class="how-title">Dostanete email</div><div class="how-desc">Prehľadný email s novými výzvami priamo na váš email.</div></div>
+  <div class="stats-row">
+    <div class="stat-item"><span class="stat-n">200+</span><span class="stat-l">EU programov</span></div>
+    <div class="stat-item"><span class="stat-n">700+</span><span class="stat-l">aktívnych výziev</span></div>
+    <div class="stat-item"><span class="stat-n">zadarmo</span><span class="stat-l">vždy a navždy</span></div>
   </div>
-</section>
-
-<section class="section">
-  <div class="section-label">Prehľadávané programy</div>
-  <div class="prog-wrap">
+  <div class="prog-row">
     <span class="prog-tag p-h">Horizon Europe</span>
     <span class="prog-tag p-e">EDF</span>
     <span class="prog-tag p-l">LIFE</span>
@@ -213,62 +158,72 @@
     <span class="prog-tag p-d">Erasmus+</span>
     <span class="prog-tag p-e">ISF</span>
     <span class="prog-tag p-g">EU4Health</span>
-    <span class="prog-tag p-m">+ 190 ďalších</span>
+    <span class="prog-tag p-g">+ 190 ďalších</span>
   </div>
 </section>
 
-<section id="konfigurator">
-  <div class="konfig-card">
-    <div id="form-view">
-      <div class="konfig-title">Nastavte váš monitoring</div>
-      <div class="konfig-sub">Trvá to 2 minúty. Výzvy dostanete len tie, ktoré sú relevantné pre vás.</div>
+<div class="how-row" id="how">
+  <div class="how-step"><div class="how-num">01</div><div class="how-title">Nastavíte profil</div><div class="how-desc">Typ organizácie, oblasti, kľúčové slová.</div></div>
+  <div class="how-step"><div class="how-num">02</div><div class="how-title">Skenujeme portál</div><div class="how-desc">Každý týždeň prehľadáme 200+ EU programov.</div></div>
+  <div class="how-step"><div class="how-num">03</div><div class="how-title">Filtrujeme</div><div class="how-desc">Výzva musí sedieť na oblasť AJ typ org.</div></div>
+  <div class="how-step"><div class="how-num">04</div><div class="how-title">Dostanete email</div><div class="how-desc">Len nové výzvy, ktoré ste ešte nevideli.</div></div>
+</div>
 
-      <div class="field-label">Typ organizácie</div>
-      <div class="org-grid" id="org-grid"></div>
+<div class="konfig" id="konfig">
+  <div id="form-view">
+    <div class="konfig-title">Nastavte váš monitoring</div>
+    <div class="konfig-sub">Trvá to 2 minúty. Výzvy dostanete len tie, ktoré sú relevantné pre vás.</div>
 
-      <div class="field-label">Oblasti záujmu (max. 3)</div>
-      <div class="ob-grid" id="ob-grid"></div>
-      <div class="ob-hint" id="ob-hint">Vyberte 1–3 oblasti — kľúčové slová sa doplnia automaticky.</div>
+    <div class="el-label">Typ organizácie</div>
+    <div class="el-grid4" id="org-grid"></div>
 
-      <div class="field-label">Kľúčové slová</div>
-      <div class="kw-box">
-        <div class="kw-sublabel">🟦 z oblasti &nbsp;·&nbsp; 🟩 z typu org. &nbsp;·&nbsp; ⬜ vlastné — ponechajte čo chcete, zmažte čo nechcete, pridajte vlastné</div>
-        <div class="pills" id="kw-pills"></div>
-        <div class="sep"></div>
-        <div class="add-row">
-          <input type="text" id="kw-input" placeholder="Pridať vlastné kľúčové slovo…" onkeydown="if(event.key==='Enter')addKw()">
-          <button onclick="addKw()">+ Pridať</button>
-        </div>
+    <div class="el-label">Oblasti záujmu (max. 3)</div>
+    <div class="el-grid5" id="ob-grid"></div>
+    <div class="el-hint" id="ob-hint">Vyberte 1–3 oblasti — kľúčové slová sa doplnia automaticky.</div>
+
+    <div class="el-label">Kľúčové slová</div>
+    <div class="el-kw-box">
+      <div class="el-kw-sub">🟦 z oblasti &nbsp;·&nbsp; 🟩 z typu org. &nbsp;·&nbsp; ⬜ vlastné — ponechajte čo chcete, zmažte čo nechcete, pridajte vlastné</div>
+      <div class="el-pills" id="kw-pills"></div>
+      <div class="el-sep"></div>
+      <div class="el-add-row">
+        <input type="text" id="kw-input" placeholder="Pridať vlastné kľúčové slovo…">
+        <button onclick="addKw()">+ Pridať</button>
       </div>
-
-      <div class="email-section">
-        <div class="field-label">Váš email</div>
-        <input type="email" id="email-input" class="email-input" placeholder="vas@email.com">
-        <div class="freq-row">
-          <button class="freq-btn active" id="f0" onclick="setFreq(0)">Každý pondelok</button>
-          <button class="freq-btn" id="f1" onclick="setFreq(1)">2× týždenne</button>
-          <button class="freq-btn" id="f2" onclick="setFreq(2)">Denne</button>
-        </div>
-      </div>
-
-      <button class="submit-btn" onclick="submitForm()">Aktivovať monitoring →</button>
     </div>
 
-    <div class="success-box" id="success-view">
-      <div class="success-icon">
-        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    <div class="el-bottom-row">
+      <div class="el-group">
+        <label>Váš email</label>
+        <input type="email" id="email-input" placeholder="vas@email.com">
       </div>
-      <h3>Monitoring aktivovaný!</h3>
-      <p id="s-text"></p>
-      <div class="kw-summary" id="s-kw"></div>
-      <span class="reset-link" onclick="resetForm()">Zmeniť nastavenia</span>
+      <div class="el-group">
+        <label>Interval</label>
+        <div class="el-freq">
+          <button class="active" id="f0" onclick="setFreq(0)">1× za 7 dní</button>
+          <button id="f1" onclick="setFreq(1)">1× za 14 dní</button>
+          <button id="f2" onclick="setFreq(2)">1× za 30 dní</button>
+        </div>
+      </div>
     </div>
+
+    <button class="el-submit" onclick="submitForm()">Aktivovať monitoring →</button>
   </div>
-</section>
+
+  <div class="el-success" id="success-view">
+    <div class="el-check">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h2 style="font-size:17px;font-weight:600;color:#1a2340;margin-bottom:8px;">Monitoring aktivovaný!</h2>
+    <p style="font-size:13px;color:#555;margin-bottom:14px;" id="s-text"></p>
+    <div class="el-pills" id="s-kw" style="justify-content:center;margin-bottom:18px;"></div>
+    <span class="el-reset" onclick="resetForm()">Zmeniť nastavenia</span>
+  </div>
+</div>
 
 <footer>
-  <div class="footer-left">EuLooker · MecaSys · open source · zadarmo</div>
-  <div class="footer-links">
+  <span>EuLooker · MecaSys · open source · zadarmo</span>
+  <div>
     <a href="https://ec.europa.eu/info/funding-tenders/opportunities/portal" target="_blank">EC portál</a>
     <a href="https://github.com/mecasysdata/EuLooker" target="_blank">GitHub</a>
     <a href="mailto:mecasysdata@gmail.com">Kontakt</a>
@@ -276,110 +231,71 @@
 </footer>
 
 <script>
-// ── Cloudflare Worker URL (token je bezpečne skrytý tam) ──────
 const WORKER_URL = 'https://eulooker-register.mecasysdata.workers.dev';
 
-// ── Typy organizácií ──────────────────────────────────────────
 const TYPY_ORG = [
-  { id:'sme',     icon:'🏭', nazov:'SME',
-    kw:['sme','small and medium','smes','eic accelerator','cascade financing','for smes'] },
-  { id:'large',   icon:'🏗️', nazov:'Veľký podnik',
-    kw:['large enterprise','large company','large industry','for-profit','private company'] },
-  { id:'hei',     icon:'🎓', nazov:'Vysoká škola / HEI',
-    kw:['higher education','university','academic institution','hei','academia'] },
-  { id:'rto',     icon:'🔬', nazov:'Výskumná org. (RTO)',
-    kw:['research organisation','research organization','research center','rto','research institute'] },
-  { id:'public',  icon:'🏛️', nazov:'Verejný sektor',
-    kw:['public body','public authority','municipality','local authority','public administration'] },
-  { id:'ngo',     icon:'🤝', nazov:'NGO / Asociácia / Klaster',
-    kw:['non-governmental','ngo','association','cluster','foundation','civil society'] },
-  { id:'startup', icon:'🚀', nazov:'Startup / Spin-off',
-    kw:['startup','start-up','spin-off','spin-out','deep tech','eic pathfinder','scaleup'] },
-  { id:'intl',    icon:'🌍', nazov:'Medzinárodná org.',
-    kw:['international organisation','international organization','intergovernmental','multilateral'] },
+  { id:'sme', icon:'🏭', nazov:'SME', kw:['sme','small and medium','smes','eic accelerator','cascade financing','for smes'] },
+  { id:'large', icon:'🏗️', nazov:'Veľký podnik', kw:['large enterprise','large company','large industry','for-profit','private company'] },
+  { id:'hei', icon:'🎓', nazov:'Vysoká škola / HEI', kw:['higher education','university','academic institution','hei','academia'] },
+  { id:'rto', icon:'🔬', nazov:'Výskumná org. (RTO)', kw:['research organisation','research organization','research center','rto','research institute'] },
+  { id:'public', icon:'🏛️', nazov:'Verejný sektor', kw:['public body','public authority','municipality','local authority','public administration'] },
+  { id:'ngo', icon:'🤝', nazov:'NGO / Asociácia', kw:['non-governmental','ngo','association','cluster','foundation','civil society'] },
+  { id:'startup', icon:'🚀', nazov:'Startup / Spin-off', kw:['startup','start-up','spin-off','spin-out','deep tech','eic pathfinder','scaleup'] },
+  { id:'intl', icon:'🌍', nazov:'Medzinárodná org.', kw:['international organisation','international organization','intergovernmental','multilateral'] },
 ];
 
-// ── Oblasti záujmu ────────────────────────────────────────────
 const OBLASTI = [
-  { icon:'🏭', name:'Strojárstvo / Industry 4.0', prog:'Horizon CL4 · EDF · Digital Europe',
-    kw:['industry 4.0','industry 5.0','advanced manufacturing','smart factory','digital twin','industrial automation','cobots','additive manufacturing','3d printing','industrial iot','made in europe','factory of the future'] },
-  { icon:'🤖', name:'AI / Robotika / Deep Tech', prog:'Horizon CL4 · EIC · Digital Europe',
-    kw:['artificial intelligence','machine learning','robotics','autonomous systems','deep learning','generative ai','computer vision','edge computing','quantum computing','apply ai'] },
-  { icon:'🌿', name:'Zelená energia / Klíma', prog:'Horizon CL5 · LIFE · Innovation Fund',
-    kw:['renewable energy','green hydrogen','carbon capture','energy storage','solar energy','wind energy','net zero','decarbonisation','energy efficiency','smart grid','clean energy'] },
-  { icon:'🌱', name:'Agro / Bio / Circular', prog:'Horizon CL6 · LIFE · EAFRD',
-    kw:['precision agriculture','smart farming','bioeconomy','bio-based','biodegradable','sustainable packaging','soil health','microbiome','agritech','biomaterial'] },
-  { icon:'🏥', name:'Zdravie / Medicína / Biotech', prog:'Horizon CL1 · EU4Health · EIC',
-    kw:['medical device','diagnostics','drug development','clinical trial','personalised medicine','digital health','cancer research','biotechnology','antimicrobial','genomics'] },
-  { icon:'🛡️', name:'Obrana / Bezpečnosť / Drony', prog:'EDF · ISF · Horizon',
-    kw:['drone','uav','unmanned','defence','dual-use','counter-drone','border surveillance','cbrn','naval','underwater','security technology','swarm'] },
-  { icon:'🚀', name:'Vesmír / Space Tech', prog:'Horizon CL4 · ESA · Copernicus',
-    kw:['satellite','earth observation','space exploration','copernicus','galileo','new space','remote sensing','space transportation'] },
-  { icon:'🚗', name:'Mobilita / Doprava / Smart City', prog:'Horizon CL5 · CEF',
-    kw:['electric vehicle','autonomous driving','urban mobility','smart city','zero emission vehicle','battery technology','hydrogen vehicle','sustainable transport'] },
-  { icon:'💧', name:'Voda / Oceány / Životné prostredie', prog:'Horizon CL6 · LIFE · EMFAF',
-    kw:['water purification','ocean cleaning','marine litter','water quality','blue economy','wastewater','aquaculture','desalination'] },
-  { icon:'📚', name:'Vzdelávanie / Sociálna inovácia', prog:'Erasmus+ · ESF · EIC',
-    kw:['education technology','vocational training','digital skills','social innovation','edtech','reskilling','upskilling','vocational excellence'] },
+  { icon:'🏭', name:'Strojárstvo / Industry 4.0', prog:'Horizon CL4 · EDF · Digital Europe', kw:['industry 4.0','industry 5.0','advanced manufacturing','smart factory','digital twin','industrial automation','cobots','additive manufacturing','3d printing','industrial iot','made in europe','factory of the future'] },
+  { icon:'🤖', name:'AI / Robotika / Deep Tech', prog:'Horizon CL4 · EIC · Digital Europe', kw:['artificial intelligence','machine learning','robotics','autonomous systems','deep learning','generative ai','computer vision','edge computing','quantum computing','apply ai'] },
+  { icon:'🌿', name:'Zelená energia / Klíma', prog:'Horizon CL5 · LIFE · Innovation Fund', kw:['renewable energy','green hydrogen','carbon capture','energy storage','solar energy','wind energy','net zero','decarbonisation','energy efficiency','smart grid','clean energy'] },
+  { icon:'🌱', name:'Agro / Bio / Circular', prog:'Horizon CL6 · LIFE · EAFRD', kw:['precision agriculture','smart farming','bioeconomy','bio-based','biodegradable','sustainable packaging','soil health','microbiome','agritech','biomaterial'] },
+  { icon:'🏥', name:'Zdravie / Medicína / Biotech', prog:'Horizon CL1 · EU4Health · EIC', kw:['medical device','diagnostics','drug development','clinical trial','personalised medicine','digital health','cancer research','biotechnology','antimicrobial','genomics'] },
+  { icon:'🛡️', name:'Obrana / Bezpečnosť / Drony', prog:'EDF · ISF · Horizon', kw:['drone','uav','unmanned','defence','dual-use','counter-drone','border surveillance','cbrn','naval','underwater','security technology','swarm'] },
+  { icon:'🚀', name:'Vesmír / Space Tech', prog:'Horizon CL4 · ESA · Copernicus', kw:['satellite','earth observation','space exploration','copernicus','galileo','new space','remote sensing','space transportation'] },
+  { icon:'🚗', name:'Mobilita / Doprava / Smart City', prog:'Horizon CL5 · CEF', kw:['electric vehicle','autonomous driving','urban mobility','smart city','zero emission vehicle','battery technology','hydrogen vehicle','sustainable transport'] },
+  { icon:'💧', name:'Voda / Oceány / Životné prostredie', prog:'Horizon CL6 · LIFE · EMFAF', kw:['water purification','ocean cleaning','marine litter','water quality','blue economy','wastewater','aquaculture','desalination'] },
+  { icon:'📚', name:'Vzdelávanie / Sociálna inovácia', prog:'Erasmus+ · ESF · EIC', kw:['education technology','vocational training','digital skills','social innovation','edtech','reskilling','upskilling','vocational excellence'] },
 ];
 
-let selOrg = null;
-let sel    = [];
-let kws    = [];
-let freq   = 0;
+let selOrg = null, sel = [], kws = [], freq = 0;
 
 function renderOrg() {
-  document.getElementById('org-grid').innerHTML = TYPY_ORG.map((o,i) => `
-    <div class="org-card${selOrg===i?' active':''}" onclick="toggleOrg(${i})">
-      <div class="org-icon">${o.icon}</div>
-      <div class="org-name">${o.nazov}</div>
-    </div>
-  `).join('');
+  document.getElementById('org-grid').innerHTML = TYPY_ORG.map((o,i) =>
+    `<div class="el-card${selOrg===i?' active':''}" onclick="toggleOrg(${i})">
+      <div class="el-card-top"><span>${o.icon}</span><span>${o.nazov}</span></div>
+    </div>`).join('');
 }
 
 function toggleOrg(i) {
   if (selOrg !== null) kws = kws.filter(k => k.type !== 'org');
   selOrg = (selOrg === i) ? null : i;
-  if (selOrg !== null) {
-    TYPY_ORG[selOrg].kw.forEach(k => {
-      if (!kws.find(x => x.t === k)) kws.push({t:k, type:'org'});
-    });
-  }
-  renderOrg();
-  renderKw();
+  if (selOrg !== null) TYPY_ORG[selOrg].kw.forEach(k => { if (!kws.find(x=>x.t===k)) kws.push({t:k,type:'org'}); });
+  renderOrg(); renderKw();
 }
 
 function renderOblasti() {
-  document.getElementById('ob-grid').innerHTML = OBLASTI.map((o,i) => `
-    <div class="ob-card${sel.includes(i)?' active':''}${sel.length>=3&&!sel.includes(i)?' locked':''}" onclick="toggleOblast(${i})">
-      <div class="ob-icon">${o.icon}</div>
-      <div class="ob-info">
-        <div class="ob-name">${o.name}</div>
-        <div class="ob-prog">${o.prog}</div>
-      </div>
-    </div>
-  `).join('');
+  document.getElementById('ob-grid').innerHTML = OBLASTI.map((o,i) =>
+    `<div class="el-card${sel.includes(i)?' active':''}${sel.length>=3&&!sel.includes(i)?' locked':''}" onclick="toggleOblast(${i})">
+      <div class="el-card-top"><span>${o.icon}</span><span>${o.name}</span></div>
+      <div class="el-card-sub">${o.prog}</div>
+    </div>`).join('');
 }
 
 function toggleOblast(i) {
   const o = OBLASTI[i], idx = sel.indexOf(i);
-  if (idx > -1) {
-    sel.splice(idx, 1);
-    kws = kws.filter(k => k.type !== 'oblast' || !o.kw.includes(k.t));
-  } else {
+  if (idx > -1) { sel.splice(idx,1); kws = kws.filter(k => k.type!=='oblast' || !o.kw.includes(k.t)); }
+  else {
     if (sel.length >= 3) { document.getElementById('ob-hint').textContent = 'Maximum sú 3 oblasti. Najprv odznačte jednu.'; return; }
-    sel.push(i);
-    o.kw.forEach(k => { if (!kws.find(x => x.t === k)) kws.push({t:k, type:'oblast'}); });
+    sel.push(i); o.kw.forEach(k => { if (!kws.find(x=>x.t===k)) kws.push({t:k,type:'oblast'}); });
   }
   document.getElementById('ob-hint').textContent = sel.length ? `Vybratých: ${sel.length} / 3` : 'Vyberte 1–3 oblasti — kľúčové slová sa doplnia automaticky.';
-  renderOblasti();
-  renderKw();
+  renderOblasti(); renderKw();
 }
 
 function renderKw() {
   document.getElementById('kw-pills').innerHTML = kws.map((k,i) => {
-    const cls = k.type==='oblast' ? 'pill-auto' : k.type==='org' ? 'pill-org' : 'pill-custom';
-    return `<span class="pill ${cls}">${k.t}<button class="pill-x" onclick="removeKw(${i})">×</button></span>`;
+    const cls = k.type==='oblast'?'el-pill-oblast':k.type==='org'?'el-pill-org':'el-pill-custom';
+    return `<span class="el-pill ${cls}">${k.t}<button class="el-pill-x" onclick="removeKw(${i})">×</button></span>`;
   }).join('');
 }
 
@@ -389,17 +305,17 @@ function addKw() {
   const inp = document.getElementById('kw-input');
   const v = inp.value.trim().toLowerCase();
   if (!v) return;
-  if (!kws.find(x => x.t === v)) kws.push({t:v, type:'custom'});
-  inp.value = '';
-  renderKw();
+  if (!kws.find(x=>x.t===v)) kws.push({t:v,type:'custom'});
+  inp.value=''; renderKw();
 }
+
+document.getElementById('kw-input').addEventListener('keydown', e => { if(e.key==='Enter') addKw(); });
 
 function setFreq(i) {
   freq = i;
   [0,1,2].forEach(j => document.getElementById('f'+j).classList.toggle('active', j===i));
 }
 
-// ── Submit → Cloudflare Worker → GitHub Actions ───────────────
 function submitForm() {
   const email = document.getElementById('email-input').value.trim();
   if (!email || !email.includes('@')) { alert('Zadajte platný email.'); return; }
@@ -410,9 +326,10 @@ function submitForm() {
   const typOrgNazov = TYPY_ORG[selOrg].nazov;
   const oblasti     = sel.map(i => OBLASTI[i].name);
   const kwCustom    = kws.filter(k => k.type === 'custom').map(k => k.t);
-  const freqLabel   = ['pondelok','streda+pondelok','denne'][freq];
+  const freqLabel   = ['7','14','30'][freq];
+  const intervalVal = `${freqLabel}dni`;
 
-  const btn = document.querySelector('.submit-btn');
+  const btn = document.querySelector('.el-submit');
   btn.textContent = 'Registrujem…';
   btn.disabled = true;
 
@@ -420,20 +337,18 @@ function submitForm() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      email    : email,
-      typ_org  : typOrgNazov,
-      oblasti  : oblasti,
-      kw_custom: kwCustom,
-      interval : freqLabel,
+      email, typ_org: typOrgNazov, oblasti, kw_custom: kwCustom, interval: intervalVal
     })
   })
   .then(r => r.json())
   .then(data => {
     if (data.ok) {
-      zobrazSuccess(email, freqLabel, typOrgNazov);
-    } else {
-      throw new Error(data.error || 'Neznáma chyba');
-    }
+      const freqText = ['7 dní','14 dní','30 dní'][freq];
+      document.getElementById('s-text').textContent = `Výzvy budú chodiť na ${email} — 1× za ${freqText} · ${typOrgNazov}`;
+      document.getElementById('s-kw').innerHTML = kws.map(k=>`<span class="el-pill el-pill-oblast">${k.t}</span>`).join('');
+      document.getElementById('form-view').style.display = 'none';
+      document.getElementById('success-view').style.display = 'block';
+    } else { throw new Error(data.error || 'Neznáma chyba'); }
   })
   .catch(err => {
     alert('Chyba registrácie. Skúste znova alebo napíšte na mecasysdata@gmail.com\n\n' + err.message);
@@ -442,26 +357,15 @@ function submitForm() {
   });
 }
 
-function zobrazSuccess(email, freq, typOrg) {
-  const fl = {'pondelok':'každý pondelok','streda+pondelok':'2× týždenne','denne':'denne'};
-  document.getElementById('s-text').textContent =
-    `Výzvy budú chodiť na ${email} — ${fl[freq]||freq} · ${typOrg}`;
-  document.getElementById('s-kw').innerHTML = kws.map(k =>
-    `<span class="pill pill-auto">${k.t}</span>`).join('');
-  document.getElementById('form-view').style.display = 'none';
-  document.getElementById('success-view').style.display = 'block';
-}
-
 function resetForm() {
   document.getElementById('form-view').style.display = 'block';
   document.getElementById('success-view').style.display = 'none';
-  const btn = document.querySelector('.submit-btn');
+  const btn = document.querySelector('.el-submit');
   btn.textContent = 'Aktivovať monitoring →';
   btn.disabled = false;
 }
 
-renderOrg();
-renderOblasti();
+renderOrg(); renderOblasti();
 </script>
 </body>
 </html>
