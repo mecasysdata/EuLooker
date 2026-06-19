@@ -209,22 +209,74 @@ jobs:
               'Vysoká škola / HEI': ['higher education','university','academic institution','hei','academia'],
               'Výskumná org. (RTO)': ['research organisation','research organization','research center','rto','research institute'],
               'Verejný sektor': ['public body','public authority','municipality','local authority','public administration'],
+              'NGO / Asociácia': ['non-governmental','ngo','association','cluster','foundation','civil society'],
               'NGO / Asociácia / Klaster': ['non-governmental','ngo','association','cluster','foundation','civil society'],
               'Startup / Spin-off': ['startup','start-up','spin-off','spin-out','deep tech','eic pathfinder','scaleup'],
               'Medzinárodná org.': ['international organisation','international organization','intergovernmental','multilateral'],
           }
 
           OBLASTI_KW = {
-              'Strojárstvo / Industry 4.0': ['industry 4.0','industry 5.0','advanced manufacturing','smart factory','digital twin','industrial automation','cobots','additive manufacturing','3d printing','industrial iot','made in europe','factory of the future'],
-              'AI / Robotika / Deep Tech': ['artificial intelligence','machine learning','robotics','autonomous systems','deep learning','generative ai','computer vision','edge computing','quantum computing','apply ai'],
-              'Zelená energia / Klíma': ['renewable energy','green hydrogen','carbon capture','energy storage','solar energy','wind energy','net zero','decarbonisation','energy efficiency','smart grid','clean energy'],
-              'Agro / Bio / Circular': ['precision agriculture','smart farming','bioeconomy','bio-based','biodegradable','sustainable packaging','soil health','microbiome','agritech','biomaterial'],
-              'Zdravie / Medicína / Biotech': ['medical device','diagnostics','drug development','clinical trial','personalised medicine','digital health','cancer research','biotechnology','antimicrobial','genomics'],
-              'Obrana / Bezpečnosť / Drony': ['drone','uav','unmanned','defence','dual-use','counter-drone','border surveillance','cbrn','naval','underwater','security technology','swarm'],
-              'Vesmír / Space Tech': ['satellite','earth observation','space exploration','copernicus','galileo','new space','remote sensing','space transportation'],
-              'Mobilita / Doprava / Smart City': ['electric vehicle','autonomous driving','urban mobility','smart city','zero emission vehicle','battery technology','hydrogen vehicle','sustainable transport'],
-              'Voda / Oceány / Životné prostredie': ['water purification','ocean cleaning','marine litter','water quality','blue economy','wastewater','aquaculture','desalination'],
-              'Vzdelávanie / Sociálna inovácia': ['education technology','vocational training','digital skills','social innovation','edtech','reskilling','upskilling','vocational excellence'],
+              'Strojárstvo / Industry 4.0': [
+                  'industry 4.0','industry 5.0','advanced manufacturing','smart factory',
+                  'digital twin','industrial automation','cobots','additive manufacturing',
+                  '3d printing','industrial iot','made in europe','factory of the future',
+                  'cyber-physical','smart manufacturing','industrial transformation',
+                  'manufacturing excellence','production technology','automation technology',
+                  'industrial robot','lean manufacturing','supply chain','quality control',
+                  'testing facilities','cnc','industrial digitali'],
+              'AI / Robotika / Deep Tech': [
+                  'artificial intelligence','machine learning','robotics','autonomous systems',
+                  'deep learning','generative ai','computer vision','edge computing',
+                  'quantum computing','apply ai','neural network','natural language processing',
+                  'nlp','large language model','trustworthy ai','explainable ai','ai safety',
+                  'human-robot interaction','embedded ai','foundation model','data-driven'],
+              'Zelená energia / Klíma': [
+                  'renewable energy','green hydrogen','carbon capture','energy storage',
+                  'solar energy','wind energy','net zero','decarbonisation','energy efficiency',
+                  'smart grid','clean energy','offshore wind','heat pump','district heating',
+                  'photovoltaic','battery storage','power grid','electrolysis','biofuel',
+                  'geothermal','tidal energy','carbon neutral','carbon footprint','emission reduction'],
+              'Agro / Bio / Circular': [
+                  'precision agriculture','smart farming','bioeconomy','bio-based','biodegradable',
+                  'sustainable packaging','soil health','microbiome','agritech','biomaterial',
+                  'food security','crop monitoring','bioreactor','fermentation','composting',
+                  'waste valorisation','biopolymer','green chemistry','plant-based','agroecology',
+                  'food system','circular bioeconomy'],
+              'Zdravie / Medicína / Biotech': [
+                  'medical device','diagnostics','drug development','clinical trial',
+                  'personalised medicine','digital health','cancer research','biotechnology',
+                  'antimicrobial','genomics','vaccine','proteomics','wearable health',
+                  'mental health','telemedicine','rehabilitation','medical ai','in vitro',
+                  'cell therapy','rare disease','health data','patient','hospital'],
+              'Obrana / Bezpečnosť / Drony': [
+                  'drone','uav','unmanned','defence','dual-use','counter-drone',
+                  'border surveillance','cbrn','naval','underwater','security technology','swarm',
+                  'autonomous underwater','auv','counter-uas','situational awareness',
+                  'cybersecurity','critical infrastructure','explosive detection',
+                  'surveillance','radar','military','defense'],
+              'Vesmír / Space Tech': [
+                  'satellite','earth observation','space exploration','copernicus','galileo',
+                  'new space','remote sensing','space transportation','launch vehicle',
+                  'reusable rocket','in-orbit','space debris','lunar','space manufacturing',
+                  'cubesat','nanosatellite','space economy','esa','on-orbit'],
+              'Mobilita / Doprava / Smart City': [
+                  'electric vehicle','autonomous driving','urban mobility','smart city',
+                  'zero emission vehicle','battery technology','hydrogen vehicle','sustainable transport',
+                  'charging infrastructure','vehicle to grid','fleet management','micro-mobility',
+                  'autonomous bus','rail','traffic management','connected vehicle',
+                  'automated mobility','ccam','logistics','last mile'],
+              'Voda / Oceány / Životné prostredie': [
+                  'water purification','ocean cleaning','marine litter','water quality',
+                  'blue economy','wastewater','aquaculture','desalination',
+                  'flood risk','drought','groundwater','ocean acidification',
+                  'marine ecosystem','plastic recycling','wetland','river restoration',
+                  'water reuse','water management','marine protected'],
+              'Vzdelávanie / Sociálna inovácia': [
+                  'education technology','vocational training','digital skills','social innovation',
+                  'edtech','reskilling','upskilling','vocational excellence',
+                  'lifelong learning','micro-credential','apprenticeship','youth employment',
+                  'inclusion','disability','rural development','stem education',
+                  'higher education','skills gap','community','social enterprise'],
           }
 
           PROGRAMME_MAP = {
@@ -255,7 +307,7 @@ jobs:
                   if len(w.split()) > 1:
                       if w in t: return True
                   else:
-                      if re.search(r'\b' + re.escape(w) + r'\b', t): return True
+                      if re.search(r'\b' + re.escape(w) + r's?\b', t): return True
               return False
 
           def _najdi(text, slova):
@@ -265,7 +317,7 @@ jobs:
                   if len(w.split()) > 1:
                       if w in t: found.append(w)
                   else:
-                      if re.search(r'\b' + re.escape(w) + r'\b', t): found.append(w)
+                      if re.search(r'\b' + re.escape(w) + r's?\b', t): found.append(w)
               return found
 
           def hladaj_kw(slovo, page=1):
@@ -363,11 +415,12 @@ jobs:
 
           # Pošli email s výsledkami
           oblasti_str = ', '.join(oblasti)
-          interval_sk = {
-              'pondelok': 'každý pondelok / every Monday',
-              'streda+pondelok': '2× týždenne / twice a week',
-              'denne': 'denne / daily'
-          }.get(interval, interval)
+          # Mapovanie intervalu
+          if '7' in str(interval): dni_txt = '7 dní / 7 days'
+          elif '14' in str(interval): dni_txt = '14 dní / 14 days'
+          elif '30' in str(interval): dni_txt = '30 dní / 30 days'
+          else: dni_txt = interval
+          interval_sk = f'1× za {dni_txt}'
           datum = datetime.now().strftime("%d. %m. %Y")
 
           if not vysledky:
