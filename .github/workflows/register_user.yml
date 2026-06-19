@@ -40,28 +40,19 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Register user + send welcome email + first results
+      - name: Register user
         run: |
           python3 << 'PYEOF'
-          import json, os, re, time, smtplib
-          from datetime import datetime, timezone, timedelta
-          from email.mime.multipart import MIMEMultipart
-          from email.mime.text import MIMEText
-          from collections import defaultdict
+          import json, os
+          from datetime import datetime
 
-          # ── Konfigurácia emailu ───────────────────────────────
-          EMAIL_ODOSIELATEL = "mecasysdata@gmail.com"
-          EMAIL_HESLO       = os.environ['EMAIL_HESLO']
-
-          # ── Vstupné dáta ──────────────────────────────────────
-          SUBOR     = "users.json"
+          SUBOR  = "users.json"
           email     = os.environ['INPUT_EMAIL'].strip().lower()
           typ_org   = os.environ['INPUT_TYP_ORG']
           oblasti   = json.loads(os.environ['INPUT_OBLASTI'])
           kw_custom = json.loads(os.environ['INPUT_KW_CUSTOM'])
           interval  = os.environ['INPUT_INTERVAL']
 
-          # ── Uložiť užívateľa ──────────────────────────────────
           if os.path.exists(SUBOR):
               with open(SUBOR, 'r') as f:
                   users = json.load(f)
@@ -88,8 +79,130 @@ jobs:
 
           with open(SUBOR, 'w') as f:
               json.dump(users, f, indent=2, ensure_ascii=False)
+          PYEOF
+        env:
+          INPUT_EMAIL:     ${{ github.event.inputs.email }}
+          INPUT_TYP_ORG:   ${{ github.event.inputs.typ_org }}
+          INPUT_OBLASTI:   ${{ github.event.inputs.oblasti }}
+          INPUT_KW_CUSTOM: ${{ github.event.inputs.kw_custom }}
+          INPUT_INTERVAL:  ${{ github.event.inputs.interval }}
 
-          # ── Typy organizácií KW ───────────────────────────────
+      - name: Save users.json
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "GitHub Actions"
+          git add users.json
+          git commit -m "register user [skip ci]" || echo "nothing to commit"
+          git push
+
+      - name: Send welcome email
+        run: |
+          python3 << 'PYEOF'
+          import json, os, smtplib
+          from datetime import datetime
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+
+          EMAIL_ODOSIELATEL = "mecasysdata@gmail.com"
+          EMAIL_HESLO       = os.environ['EMAIL_HESLO']
+          email     = os.environ['INPUT_EMAIL'].strip().lower()
+          typ_org   = os.environ['INPUT_TYP_ORG']
+          oblasti   = json.loads(os.environ['INPUT_OBLASTI'])
+          interval  = os.environ['INPUT_INTERVAL']
+
+          oblasti_str = ', '.join(oblasti)
+          interval_sk = {
+              'pondelok': 'každý pondelok / every Monday',
+              'streda+pondelok': '2× týždenne / twice a week',
+              'denne': 'denne / daily'
+          }.get(interval, interval)
+
+          html = f"""
+          <html><body style="font-family:Arial,sans-serif;max-width:780px;margin:auto;padding:24px;">
+            <div style="background:#1a2340;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;">
+              <h1 style="margin:0;font-size:22px;">👋 Vitajte v EuLooker!</h1>
+              <p style="margin:6px 0 0;font-size:14px;opacity:.85;">Welcome to EuLooker!</p>
+            </div>
+            <div style="border:1px solid #dde3ea;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+
+              <p style="font-size:15px;margin-bottom:12px;">
+                Váš monitoring EU výziev bol úspešne aktivovaný! 🎉
+              </p>
+              <p style="font-size:13px;color:#555;margin-bottom:6px;">
+                <b>Typ organizácie:</b> {typ_org}
+              </p>
+              <p style="font-size:13px;color:#555;margin-bottom:6px;">
+                <b>Oblasti záujmu:</b> {oblasti_str}
+              </p>
+              <p style="font-size:13px;color:#555;margin-bottom:20px;">
+                <b>Interval:</b> {interval_sk}
+              </p>
+              <p style="font-size:14px;color:#1a2340;background:#E1F5EE;padding:12px 16px;border-radius:8px;margin-bottom:20px;">
+                ⏳ O niekoľko minút dostanete druhý email s výzvami za posledných 90 dní relevantných pre váš profil.
+              </p>
+
+              <hr style="border:none;border-top:1px solid #e0e6ef;margin:20px 0;">
+
+              <p style="font-size:15px;margin-bottom:12px;">
+                Your EU grants monitoring has been successfully activated! 🎉
+              </p>
+              <p style="font-size:13px;color:#555;margin-bottom:6px;">
+                <b>Organisation type:</b> {typ_org}
+              </p>
+              <p style="font-size:13px;color:#555;margin-bottom:6px;">
+                <b>Areas of interest:</b> {oblasti_str}
+              </p>
+              <p style="font-size:13px;color:#555;margin-bottom:20px;">
+                <b>Frequency:</b> {interval_sk}
+              </p>
+              <p style="font-size:14px;color:#1a2340;background:#E1F5EE;padding:12px 16px;border-radius:8px;margin-bottom:20px;">
+                ⏳ In a few minutes you will receive a second email with calls from the last 90 days relevant to your profile.
+              </p>
+
+              <hr style="border:none;border-top:1px solid #e0e6ef;margin:20px 0 12px;">
+              <p style="font-size:12px;color:#888;">
+                EuLooker · MecaSys ·
+                <a href="https://mecasysdata.github.io/EuLooker" style="color:#1565c0;">mecasysdata.github.io/EuLooker</a>
+              </p>
+            </div>
+          </body></html>"""
+
+          msg = MIMEMultipart("alternative")
+          msg["Subject"] = "EuLooker – Vitajte! / Welcome!"
+          msg["From"]    = EMAIL_ODOSIELATEL
+          msg["To"]      = email
+          msg.attach(MIMEText(html, "html", "utf-8"))
+
+          with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+              s.login(EMAIL_ODOSIELATEL, EMAIL_HESLO)
+              s.sendmail(EMAIL_ODOSIELATEL, email, msg.as_string())
+          print(f"✅ Uvítací email odoslaný na {email}")
+          PYEOF
+        env:
+          INPUT_EMAIL:     ${{ github.event.inputs.email }}
+          INPUT_TYP_ORG:   ${{ github.event.inputs.typ_org }}
+          INPUT_OBLASTI:   ${{ github.event.inputs.oblasti }}
+          INPUT_INTERVAL:  ${{ github.event.inputs.interval }}
+          EMAIL_HESLO:     ${{ secrets.EMAIL_HESLO }}
+
+      - name: Search calls (last 90 days) and send results
+        run: |
+          python3 << 'PYEOF'
+          import json, os, re, time, smtplib
+          from datetime import datetime
+          from email.mime.multipart import MIMEMultipart
+          from email.mime.text import MIMEText
+
+          import requests
+
+          EMAIL_ODOSIELATEL = "mecasysdata@gmail.com"
+          EMAIL_HESLO       = os.environ['EMAIL_HESLO']
+          email     = os.environ['INPUT_EMAIL'].strip().lower()
+          typ_org   = os.environ['INPUT_TYP_ORG']
+          oblasti   = json.loads(os.environ['INPUT_OBLASTI'])
+          kw_custom = json.loads(os.environ['INPUT_KW_CUSTOM'])
+          interval  = os.environ['INPUT_INTERVAL']
+
           TYPY_ORG_KW = {
               'SME': ['sme','small and medium','smes','eic accelerator','cascade financing','for smes'],
               'Veľký podnik': ['large enterprise','large company','large industry','for-profit','private company'],
@@ -123,8 +236,6 @@ jobs:
           }
 
           HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-
-          import requests
 
           def _strip_html(text):
               text = re.sub(r'<[^>]+>', ' ', text or '')
@@ -178,54 +289,61 @@ jobs:
               except: pass
               return {}
 
-          # ── Hľadaj výzvy pre nového užívateľa ────────────────
-          print(f"\n🔍 Hľadám výzvy pre {email} ...")
-          typ_org_kw = TYPY_ORG_KW.get(typ_org, [])
-
-          # Zozbieraj všetky KW pre hľadanie
-          vsetky_search_kw = list(typ_org_kw[:3])
-          for o in oblasti:
-              for nazov, kw_list in OBLASTI_KW.items():
-                  if nazov in o:
-                      vsetky_search_kw.extend(kw_list[:3])
-                      break
-          vsetky_search_kw.extend(kw_custom)
-          vsetky_search_kw = list(set(vsetky_search_kw))[:15]
-
-          vsetky_raw = {}
-          for slovo in vsetky_search_kw:
-              try:
-                  data = hladaj_kw(slovo)
-                  for hit in data.get('results', []):
-                      ident = hit['metadata']['identifier'][0]
-                      if ident not in vsetky_raw:
-                          vsetky_raw[ident] = hit
-                  time.sleep(0.3)
-              except Exception as e:
-                  print(f"  ⚠️ Chyba pri '{slovo}': {e}")
-
-          print(f"  Stiahnutých výziev: {len(vsetky_raw)}")
-
-          # Klasifikuj
+          # Zozbieraj KW
+          typ_org_kw  = TYPY_ORG_KW.get(typ_org, [])
           oblast_kw_all = []
+          vsetky_search_kw = []
+
           for o in oblasti:
               for nazov, kw_list in OBLASTI_KW.items():
                   if nazov in o:
                       oblast_kw_all.extend(kw_list)
+                      vsetky_search_kw.extend(kw_list)
+                      break
 
+          # Pridaj vlastné KW
           oblast_kw_all.extend(kw_custom)
+          vsetky_search_kw.extend(kw_custom)
+          vsetky_search_kw.extend(typ_org_kw[:3])
+          vsetky_search_kw = list(set(vsetky_search_kw))
 
+          print(f"🔍 Hľadám výzvy za posledných 90 dní pre {email} ...")
+          print(f"   KW na hľadanie: {len(vsetky_search_kw)}")
+
+          # Stiahni výzvy
+          vsetky_raw = {}
+          for slovo in vsetky_search_kw:
+              try:
+                  data = hladaj_kw(slovo)
+                  total = data.get('totalResults', 0)
+                  pages = min((total + 49) // 50, 3)  # max 3 strany na KW
+                  for page in range(1, pages + 1):
+                      if page > 1:
+                          data = hladaj_kw(slovo, page)
+                      for hit in data.get('results', []):
+                          ident = hit['metadata']['identifier'][0]
+                          if ident not in vsetky_raw:
+                              vsetky_raw[ident] = hit
+                  time.sleep(0.3)
+              except Exception as e:
+                  print(f"  ⚠️ Chyba pri '{slovo}': {e}")
+
+          print(f"   Stiahnutých výziev: {len(vsetky_raw)}")
+
+          # Klasifikuj s AND filtrom
           vysledky = []
-          for ident, hit in list(vsetky_raw.items())[:200]:
+          for ident, hit in list(vsetky_raw.items()):
               detail = ziskaj_detail(ident)
               if not detail:
                   time.sleep(0.2)
                   continue
-              nazov  = hit.get('summary', '')
-              popis  = _strip_html(detail.get('description', ''))
-              ft     = f"{nazov} {popis}".lower()
+              nazov = hit.get('summary', '')
+              popis = _strip_html(detail.get('description', ''))
+              ft    = f"{nazov} {popis}".lower()
+
               ma_oblast = _obsahuje(ft, oblast_kw_all)
-              ma_org    = _obsahuje(ft, typ_org_kw)
+              ma_org    = _obsahuje(ft, typ_org_kw) if typ_org_kw else True
+
               if ma_oblast and ma_org:
                   meta     = hit['metadata']
                   prog_raw = meta.get('frameworkProgramme', [''])[0]
@@ -237,74 +355,59 @@ jobs:
                       'deadline' : meta.get('deadlineDate', [''])[0][:10],
                       'zhrnutie' : _skrat(popis, 4),
                       'link'     : meta.get('url', [''])[0],
-                      'kw_oblast': _najdi(ft, oblast_kw_all)[:4],
-                      'kw_org'   : _najdi(ft, typ_org_kw)[:2],
+                      'kw'       : _najdi(ft, oblast_kw_all)[:4],
                   })
               time.sleep(0.3)
 
-          print(f"  Nájdených relevantných výziev: {len(vysledky)}")
+          print(f"   Relevantných výziev: {len(vysledky)}")
 
-          # ── Pošli uvítací email + výsledky ────────────────────
-          def odosli(predmet, html):
-              msg = MIMEMultipart("alternative")
-              msg["Subject"] = predmet
-              msg["From"]    = EMAIL_ODOSIELATEL
-              msg["To"]      = email
-              msg.attach(MIMEText(html, "html", "utf-8"))
-              with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
-                  s.login(EMAIL_ODOSIELATEL, EMAIL_HESLO)
-                  s.sendmail(EMAIL_ODOSIELATEL, email, msg.as_string())
-              print(f"✅ Email odoslaný na {email}")
-
-          datum     = datetime.now().strftime("%d. %m. %Y")
+          # Pošli email s výsledkami
           oblasti_str = ', '.join(oblasti)
-          interval_sk = {'pondelok': 'každý pondelok', 'streda+pondelok': '2× týždenne', 'denne': 'denne'}.get(interval, interval)
+          interval_sk = {
+              'pondelok': 'každý pondelok / every Monday',
+              'streda+pondelok': '2× týždenne / twice a week',
+              'denne': 'denne / daily'
+          }.get(interval, interval)
+          datum = datetime.now().strftime("%d. %m. %Y")
 
           if not vysledky:
-              predmet = f"EuLooker – Vitajte! / Welcome!"
+              predmet = f"EuLooker – Výzvy za posledných 90 dní / Calls from last 90 days"
               html = f"""
               <html><body style="font-family:Arial,sans-serif;max-width:780px;margin:auto;padding:24px;">
                 <div style="background:#1a2340;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;">
-                  <h1 style="margin:0;font-size:22px;">👋 Vitajte v EuLooker!</h1>
-                  <p style="margin:6px 0 0;font-size:14px;opacity:.85;">Welcome to EuLooker!</p>
+                  <h1 style="margin:0;font-size:20px;">📢 EuLooker – {datum}</h1>
+                  <p style="margin:6px 0 0;font-size:14px;opacity:.85;">Výzvy za posledných 90 dní / Calls from last 90 days</p>
                 </div>
                 <div style="border:1px solid #dde3ea;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
-                  <p style="font-size:15px;margin-bottom:12px;">
-                    Váš monitoring EU výziev bol aktivovaný. Výzvy vám budeme posielať <b>{interval_sk}</b>.
+                  <p style="font-size:14px;margin-bottom:8px;">
+                    Pre váš profil (<b>{typ_org}</b> · {oblasti_str}) sme nenašli žiadne aktuálne výzvy.
                   </p>
-                  <p style="font-size:13px;color:#555;margin-bottom:12px;">
-                    <b>Typ organizácie:</b> {typ_org} &nbsp;·&nbsp; <b>Oblasti:</b> {oblasti_str}
-                  </p>
-                  <p style="font-size:13px;color:#888;margin-bottom:20px;">
-                    Tento týždeň sme pre váš profil nenašli žiadne nové výzvy. Skúsime znova budúci týždeň.
+                  <p style="font-size:14px;color:#555;margin-bottom:20px;">
+                    Ďalší prehľad dostanete <b>{interval_sk}</b>.
                   </p>
                   <hr style="border:none;border-top:1px solid #e0e6ef;margin:20px 0;">
-                  <p style="font-size:15px;margin-bottom:12px;">
-                    Your EU grants monitoring has been activated. You will receive calls <b>{interval_sk}</b>.
+                  <p style="font-size:14px;margin-bottom:8px;">
+                    No current calls found for your profile (<b>{typ_org}</b> · {oblasti_str}).
                   </p>
-                  <p style="font-size:13px;color:#555;">
-                    <b>Organisation type:</b> {typ_org} &nbsp;·&nbsp; <b>Areas:</b> {oblasti_str}
-                  </p>
-                  <p style="font-size:13px;color:#888;margin-top:12px;">
-                    No matching calls found this week. We'll try again next week.
+                  <p style="font-size:14px;color:#555;">
+                    Next update: <b>{interval_sk}</b>.
                   </p>
                   <hr style="border:none;border-top:1px solid #e0e6ef;margin:20px 0 12px;">
-                  <p style="font-size:12px;color:#888;">
-                    EuLooker · MecaSys · 
-                    <a href="https://mecasysdata.github.io/EuLooker" style="color:#1565c0;">mecasysdata.github.io/EuLooker</a>
-                  </p>
+                  <p style="font-size:12px;color:#888;">EuLooker · MecaSys</p>
                 </div>
               </body></html>"""
           else:
-              predmet = f"EuLooker – Vitajte! {len(vysledky)} výziev pre vás / {len(vysledky)} calls for you"
+              predmet = f"EuLooker – {len(vysledky)} výziev za 90 dní / {len(vysledky)} calls from 90 days"
               bloky = ""
               for v in vysledky:
-                  kw_text = ", ".join(v['kw_oblast'][:4]) if v['kw_oblast'] else "—"
+                  kw_text = ", ".join(v['kw']) if v['kw'] else "—"
+                  status_label = "🟢 Otvorená / Open" if v['status'] == "31094502" else "🟡 Pripravovaná / Forthcoming"
                   bloky += f"""
                   <div style="border:1px solid #dde3ea;border-radius:8px;padding:16px 20px;margin-bottom:16px;background:#fafbfc;">
                     <h3 style="margin:0 0 6px;color:#1a2340;font-size:14px;">{v['nazov']}</h3>
                     <p style="margin:0 0 6px;font-size:12px;color:#555;">
                       <b>Program:</b> {v['programme']} &nbsp;|&nbsp;
+                      {status_label} &nbsp;|&nbsp;
                       <b>Otvorenie / Opens:</b> {v['startDate']} &nbsp;|&nbsp;
                       <b>Uzávierka / Deadline:</b> {v['deadline']}
                     </p>
@@ -316,31 +419,36 @@ jobs:
               html = f"""
               <html><body style="font-family:Arial,sans-serif;max-width:780px;margin:auto;padding:24px;">
                 <div style="background:#1a2340;color:#fff;padding:20px 24px;border-radius:8px 8px 0 0;">
-                  <h1 style="margin:0;font-size:22px;">👋 Vitajte v EuLooker! / Welcome to EuLooker!</h1>
+                  <h1 style="margin:0;font-size:20px;">📢 EuLooker – {datum}</h1>
                   <p style="margin:6px 0 0;font-size:14px;opacity:.85;">
-                    Našli sme <b>{len(vysledky)}</b> výziev pre váš profil · Found <b>{len(vysledky)}</b> calls for your profile
+                    {len(vysledky)} výziev za posledných 90 dní · {len(vysledky)} calls from last 90 days
                   </p>
                 </div>
                 <div style="border:1px solid #dde3ea;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
-                  <p style="font-size:14px;margin-bottom:8px;">
-                    Váš monitoring bol aktivovaný. Ďalšie výzvy dostanete <b>{interval_sk}</b>.
-                  </p>
                   <p style="font-size:13px;color:#555;margin-bottom:20px;">
-                    <b>Typ org.:</b> {typ_org} &nbsp;·&nbsp; <b>Oblasti:</b> {oblasti_str}
+                    <b>Typ org.:</b> {typ_org} &nbsp;·&nbsp;
+                    <b>Oblasti / Areas:</b> {oblasti_str} &nbsp;·&nbsp;
+                    <b>Interval:</b> {interval_sk}
                   </p>
                   {bloky}
                   <hr style="border:none;border-top:1px solid #e0e6ef;margin:24px 0 12px;">
-                  <p style="font-size:14px;margin-bottom:8px;">
-                    Your monitoring is active. Next update: <b>{interval_sk}</b>.
-                  </p>
                   <p style="font-size:12px;color:#888;">
-                    EuLooker · MecaSys · 
+                    EuLooker · MecaSys ·
                     <a href="https://mecasysdata.github.io/EuLooker" style="color:#1565c0;">mecasysdata.github.io/EuLooker</a>
                   </p>
                 </div>
               </body></html>"""
 
-          odosli(predmet, html)
+          msg = MIMEMultipart("alternative")
+          msg["Subject"] = predmet
+          msg["From"]    = EMAIL_ODOSIELATEL
+          msg["To"]      = email
+          msg.attach(MIMEText(html, "html", "utf-8"))
+
+          with smtplib.SMTP_SSL("smtp.gmail.com", 465) as s:
+              s.login(EMAIL_ODOSIELATEL, EMAIL_HESLO)
+              s.sendmail(EMAIL_ODOSIELATEL, email, msg.as_string())
+          print(f"✅ Email s výsledkami odoslaný na {email}")
           PYEOF
         env:
           INPUT_EMAIL:     ${{ github.event.inputs.email }}
@@ -349,11 +457,3 @@ jobs:
           INPUT_KW_CUSTOM: ${{ github.event.inputs.kw_custom }}
           INPUT_INTERVAL:  ${{ github.event.inputs.interval }}
           EMAIL_HESLO:     ${{ secrets.EMAIL_HESLO }}
-
-      - name: Save users.json
-        run: |
-          git config user.email "actions@github.com"
-          git config user.name "GitHub Actions"
-          git add users.json
-          git commit -m "register user [skip ci]" || echo "nothing to commit"
-          git push
