@@ -1,18 +1,17 @@
-name: EU Grants Agent
+name: EuLooker – Daily Monitor
 
 on:
   schedule:
-    - cron: "30 6 * * 1"
-  workflow_dispatch:
+    - cron: '0 7 * * *'  # každý deň o 7:00 UTC
+  workflow_dispatch:      # možnosť spustiť manuálne
 
 permissions:
   contents: write
 
 jobs:
-  run-agent:
+  monitor:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-
+    timeout-minutes: 120
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,13 +24,15 @@ jobs:
       - name: Install dependencies
         run: pip install requests
 
-      - name: Run EU Grants Agent
+      - name: Run EuLooker
         run: python eu_grants_agent.py
+        env:
+          EMAIL_HESLO: ${{ secrets.EMAIL_HESLO }}
 
-      - name: Save seen identifiers
+      - name: Save history and users
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-          git add seen_identifiers.json
-          git commit -m "update seen identifiers [skip ci]" || echo "nothing to commit"
+          git add seen_identifiers.json users.json
+          git commit -m "update history + users [skip ci]" || echo "nothing to commit"
           git push
