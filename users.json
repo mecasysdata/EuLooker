@@ -1,16 +1,14 @@
 [
   {
     "email": "eva.matejcik@mecasys.sk",
-    "typ_org": "SME",
+    "typ_org": "NGO / Asociácia",
     "oblasti": [
-      "Zelená energia / Klíma",
-      "Zdravie / Medicína / Biotech",
-      "Agro / Bio / Circular"
+      "Voda / Oceány / Životné prostredie"
     ],
     "kw_custom": [],
-    "interval": "denne",
+    "interval": "14dni",
     "registracia": "2026-06-15 14:33",
-    "updated": "2026-06-19 03:10"
+    "updated": "2026-06-19 04:23"
   },
   {
     "email": "maria.genzorova@mecasys.sk",
