@@ -24,5 +24,18 @@
     "registracia": "2026-06-19 04:22",
     "updated": "2026-06-19 04:22",
     "posledny_email": "2026-06-19"
+  },
+  {
+    "email": "projects@moud.sk",
+    "typ_org": "NGO / Asociácia",
+    "oblasti": [
+      "Vzdelávanie / Sociálna inovácia",
+      "Strojárstvo / Industry 4.0",
+      "AI / Robotika / Deep Tech"
+    ],
+    "kw_custom": [],
+    "interval": "7dni",
+    "registracia": "2026-06-22 07:07",
+    "updated": "2026-06-22 07:07"
   }
 ]
